@@ -235,19 +235,6 @@ export default function HomeTab({ setTab }) {
             </div>
           </FeaturedCard>}
 
-          {dailyContract && <FeaturedCard title="DAILY CONTRACT" color="#EF4444" testid="daily-contract">
-            <div style={{ height: 130, marginLeft: -18, marginRight: -18, marginTop: -6, marginBottom: 12, position: "relative", overflow: "hidden", background: "#000" }}>
-              <img src={FEATURED_ART.contract} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(8,8,15,0.15) 0%, #08080f 100%)" }} />
-            </div>
-            <div className="font-display" style={{ fontSize: 20, color: "#fff", fontWeight: 800, letterSpacing: "0.06em" }}>{dailyContract.name.toUpperCase()}</div>
-            <div className="label-caps" style={{ fontSize: 9, color: "#EF4444", marginTop: 2 }}>{dailyContract.type.toUpperCase()}</div>
-            <div style={{ marginTop: 14, fontSize: 11, color: "#94a3b8", display: "flex", flexDirection: "column", gap: 8 }}>
-              <div style={{ display: "flex", justifyContent: "space-between" }}><span className="label-caps">RISK</span><span>{Array.from({ length: Math.min(4, Math.ceil(dailyContract.difficulty / 3)) }).map((_, i) => <Skull key={i} size={13} color="#EF4444" style={{ display: "inline", marginLeft: 2 }} />)}</span></div>
-              <div style={{ display: "flex", justifyContent: "space-between" }}><span className="label-caps">REWARD</span><span className="neon-gold font-display">{fmtMoney(dailyContract.reward_max)}</span></div>
-            </div>
-            <button data-testid="view-daily" onClick={() => setTab("heists")} className="btn-outline" style={{ marginTop: 12, padding: "8px 14px", fontSize: 10, borderColor: "#EF4444", color: "#EF4444" }}>VIEW DETAILS</button>
-          </FeaturedCard>}
         </div>
       </div>
 

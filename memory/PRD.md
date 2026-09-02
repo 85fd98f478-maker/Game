@@ -56,3 +56,8 @@ Tested in test_reports/iteration_2.json (backend + frontend, no issues).
 - Daily Contract: /daily-contract server-side day-index rotation (24h), +30% cash (DAILY_MULT, configurable), 1 success/cycle, failure retryable after underlying heist cooldown; reuses heist flow; dashboard card + Heists auto-open (window.__openHeist).
 - UI: HUD money compact + full-value title tooltip + responsive stat row; heist outcome labels simplified (PERFECT SUCCESS→SUCCESS display) + Daily bonus badge; gang deposit empty-state hint.
 - Verified: backend curl (daily-contract, casino slots, pvp targets) + frontend smoke screenshots (dashboard daily card, casino tab). NOT yet run through full testing_agent regression — recommended next.
+
+## Iteration 4 (2026-06) — UI polish fixes (user-reported)
+- Removed duplicate legacy "DAILY CONTRACT" FeaturedCard from Home.jsx (was rendering next to Active Vehicle in addition to the new <DailyContract /> banner). Dashboard now shows one Daily Contract only.
+- Added custom AI-generated cyberpunk artwork banners to Casino game cards (High Card, Neon Slots, Neon Roulette) via GAME_ART map + GameArt component in Casino.jsx.
+- Verified via screenshots: single daily contract on dashboard; all 3 casino cards render themed art.

@@ -6,6 +6,21 @@ import { Dices, Coins, Spade, Swords } from "lucide-react";
 
 const FEE = 0.15;
 
+const GAME_ART = {
+  highcard: "https://static.prod-images.emergentagent.com/jobs/71abe30b-bbab-4e51-a8a8-3410d62bd740/images/a81e9020ac40cdcff4462eb63e8c8913267e06f1925053fa6e40c03195c881e3.jpeg",
+  slots: "https://static.prod-images.emergentagent.com/jobs/71abe30b-bbab-4e51-a8a8-3410d62bd740/images/d65ebac3b264c4670849203bac2e6e1c83c2e3e223f8be27209cf1ac2c877405.jpeg",
+  roulette: "https://static.prod-images.emergentagent.com/jobs/71abe30b-bbab-4e51-a8a8-3410d62bd740/images/5af0ae628e7dc18bd36edd48138bb4e63663c7499a8621bfbe95710f3b265ca4.jpeg",
+};
+
+function GameArt({ src }) {
+  return (
+    <div style={{ height: 120, marginLeft: -18, marginRight: -18, marginTop: -18, marginBottom: 14, position: "relative", overflow: "hidden", background: "#000" }}>
+      <img src={src} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(8,8,15,0.1) 40%, #0a0a12 100%)" }} />
+    </div>
+  );
+}
+
 function BetPanel({ bet, setBet, disabled }) {
   const fee = Math.round(bet * FEE);
   return (
@@ -68,19 +83,22 @@ export default function Casino() {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 14 }}>
         {/* HIGH CARD vs house */}
-        <div className="card-glow" style={{ padding: 18 }} data-testid="game-highcard">
+        <div className="card-glow" style={{ padding: 18, overflow: "hidden" }} data-testid="game-highcard">
+          <GameArt src={GAME_ART.highcard} />
           <div className="font-display" style={{ color: "#fff", fontSize: 16, display: "flex", alignItems: "center", gap: 8 }}><Spade size={16} color="#00F0FF" /> HIGH CARD</div>
           <div style={{ fontSize: 11, color: "#94a3b8", margin: "8px 0", minHeight: 34 }}>Draw against the house. Higher card wins 1.9× your wager. Ties go to the house.</div>
           <button data-testid="play-highcard" onClick={() => play("highcard")} disabled={!canAfford} className="btn-primary" style={{ width: "100%", padding: 10, fontSize: 12 }}>DEAL · {fmtMoney(bet + fee)}</button>
         </div>
         {/* SLOTS */}
-        <div className="card-glow" style={{ padding: 18 }} data-testid="game-slots">
+        <div className="card-glow" style={{ padding: 18, overflow: "hidden" }} data-testid="game-slots">
+          <GameArt src={GAME_ART.slots} />
           <div className="font-display" style={{ color: "#fff", fontSize: 16, display: "flex", alignItems: "center", gap: 8 }}><Dices size={16} color="#EC4899" /> NEON SLOTS</div>
           <div style={{ fontSize: 11, color: "#94a3b8", margin: "8px 0", minHeight: 34 }}>Spin three reels. Two match = 1.4×. Triple match pays up to 15×.</div>
           <button data-testid="play-slots" onClick={() => play("slots")} disabled={!canAfford} className="btn-primary" style={{ width: "100%", padding: 10, fontSize: 12 }}>SPIN · {fmtMoney(bet + fee)}</button>
         </div>
         {/* ROULETTE */}
-        <div className="card-glow" style={{ padding: 18 }} data-testid="game-roulette">
+        <div className="card-glow" style={{ padding: 18, overflow: "hidden" }} data-testid="game-roulette">
+          <GameArt src={GAME_ART.roulette} />
           <div className="font-display" style={{ color: "#fff", fontSize: 16, display: "flex", alignItems: "center", gap: 8 }}><Coins size={16} color="#F59E0B" /> NEON ROULETTE</div>
           <div style={{ fontSize: 11, color: "#94a3b8", margin: "8px 0" }}>Bet a color (1.95×) or an exact number 0–36 (35×).</div>
           <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
