@@ -173,6 +173,11 @@ export const ITEM_IMG = {
   drone_combat: `${IB}/item_drone_combat.png`,
   drone_tech: `${IB}/item_drone_tech.png`,
   contraband_crate: `${IB}/item_contraband_crate.png`,
+  crate_tobacco: `${IB}/item_crate_tobacco.png`,
+  crate_weed: `${IB}/item_crate_weed.png`,
+  crate_alcohol: `${IB}/item_crate_alcohol.png`,
+  crate_counterfeit: `${IB}/item_crate_counterfeit.png`,
+  crate_cocaine: `${IB}/item_crate_cocaine.png`,
 };
 // Dynamic money-tier artwork. Cash = banknotes/piles only. Bank can reach gold bars.
 export const CASH_TIERS = [
@@ -195,5 +200,7 @@ export const ITEM_IMG_BY_ID = {
   drink_soda: ITEM_IMG.drink_cheap, drink_sports: ITEM_IMG.drink_mid, drink_elixir: ITEM_IMG.drink_expensive,
   med_stim: ITEM_IMG.medicine_basic, med_nano: ITEM_IMG.medicine_advanced,
   bm_combat_stim: ITEM_IMG.medicine_basic, bm_crate: ITEM_IMG.contraband_crate,
+  crate_tobacco: ITEM_IMG.crate_tobacco, crate_weed: ITEM_IMG.crate_weed, crate_alcohol: ITEM_IMG.crate_alcohol,
+  crate_counterfeit: ITEM_IMG.crate_counterfeit, crate_cocaine: ITEM_IMG.crate_cocaine,
   drone_recon: ITEM_IMG.drone_recon, drone_combat: ITEM_IMG.drone_combat, drone_tech: ITEM_IMG.drone_tech,
 };

@@ -73,6 +73,10 @@ export default function Gang() {
 
   return (
     <div style={{ display: "grid", gap: 20 }} data-testid="gang-tab">
+      <div style={{ position: "relative", overflow: "hidden", height: 130, border: "1px solid rgba(168,85,247,0.35)" }} data-testid="gang-banner">
+        <img src="/dashboard/bg_gang.png" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.5 }} />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(2,2,4,0.9) 0%, rgba(2,2,4,0.25) 100%)" }} />
+      </div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 10 }}>
         <div>
           <h2 className="font-display" style={{ fontSize: 26, color: "#fff", letterSpacing: "0.1em" }}>{gang.name.toUpperCase()}</h2>

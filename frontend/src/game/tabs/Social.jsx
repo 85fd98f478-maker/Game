@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "../../AuthContext";
 import { api, fmtDetail } from "../../api";
 import { toast } from "sonner";
-import { Users, Mail, Bell, UserPlus, Send } from "lucide-react";
+import { Users, Mail, Bell, UserPlus, Send, Shield } from "lucide-react";
 
 export default function Social({ setTab }) {
   const { refresh } = useAuth();
@@ -15,6 +15,11 @@ export default function Social({ setTab }) {
   const [notifs, setNotifs] = useState([]);
   const [msgTo, setMsgTo] = useState("");
   const [msgBody, setMsgBody] = useState("");
+  const [gangMsgs, setGangMsgs] = useState([]);
+  const [gangBody, setGangBody] = useState("");
+  const loadGang = useCallback(async () => { try { const { data } = await api.get("/messages/gang"); setGangMsgs(data.messages || []); } catch {} }, []);
+  useEffect(() => { if (sub === "gangchat") { loadGang(); const t = setInterval(loadGang, 8000); return () => clearInterval(t); } }, [sub, loadGang]);
+  const sendGang = async () => { if (!gangBody.trim()) return; try { await api.post("/messages/gang/send", { body: gangBody }); setGangBody(""); await loadGang(); } catch (e) { toast.error(fmtDetail(e.response?.data?.detail)); } };
 
   const load = useCallback(async () => {
     try { const { data } = await api.get("/friends"); setFriends(data.friends || []); setRequests(data.requests || []); } catch {}
@@ -31,7 +36,7 @@ export default function Social({ setTab }) {
   const readNotif = async (n) => { try { await api.post("/notifications/read", { id: n.id }); await load(); if (n.link && setTab) setTab(n.link); } catch {} };
   const readAll = async () => { try { await api.post("/notifications/read", { id: "all" }); await load(); } catch {} };
 
-  const SUBS = [{ k: "friends", label: "FRIENDS", icon: Users }, { k: "messages", label: "MESSAGES", icon: Mail }, { k: "notifications", label: "NOTIFICATIONS", icon: Bell }];
+  const SUBS = [{ k: "friends", label: "FRIENDS", icon: Users }, { k: "messages", label: "MESSAGES", icon: Mail }, { k: "gangchat", label: "GANG CHAT", icon: Shield }, { k: "notifications", label: "NOTIFICATIONS", icon: Bell }];
 
   return (
     <div style={{ display: "grid", gap: 20 }} data-testid="social-tab">
@@ -86,6 +91,18 @@ export default function Social({ setTab }) {
             </div>)}</div>}
         </div>
       </>}
+
+      {sub === "gangchat" && <div className="card-glow" style={{ padding: 18 }} data-testid="gang-chat">
+        <div className="label-caps neon-purple" style={{ marginBottom: 10 }}>GANG CHAT — members only</div>
+        <div style={{ display: "grid", gap: 6, maxHeight: 320, overflowY: "auto", marginBottom: 12 }}>
+          {gangMsgs.length === 0 ? <div style={{ color: "#64748B", fontSize: 13 }}>No messages yet. Say hi to your crew (you must be in a gang).</div> :
+            gangMsgs.map((m) => <div key={m.id} style={{ padding: 8, border: "1px solid #1a2436" }}><span className="font-display" style={{ color: "#A855F7", fontSize: 11 }}>{m.from_username}</span> <span style={{ color: "#fff", fontSize: 13 }}>{m.body}</span></div>)}
+        </div>
+        <div style={{ display: "flex", gap: 8 }}>
+          <input data-testid="gangchat-input" placeholder="Message your gang…" value={gangBody} onChange={(e) => setGangBody(e.target.value)} onKeyDown={(e) => e.key === "Enter" && sendGang()} style={{ flex: 1 }} />
+          <button data-testid="gangchat-send" onClick={sendGang} className="btn-primary" style={{ padding: "10px 16px" }}><Send size={13} /></button>
+        </div>
+      </div>}
 
       {sub === "notifications" && <div className="card-glow" style={{ padding: 18 }}>
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}><div className="label-caps neon-cyan">NOTIFICATIONS</div><button data-testid="mark-all-read" onClick={readAll} className="btn-outline" style={{ padding: "4px 10px", fontSize: 10 }}>MARK ALL READ</button></div>

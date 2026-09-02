@@ -40,13 +40,11 @@ function IconBtn({ Icon, badge, onClick, color = "#94a3b8", testid }) {
 }
 
 const RANKS = [
-  { max: 4, title: "Rookie", color: "#94a3b8" },
-  { max: 9, title: "Hustler", color: "#38BDF8" },
-  { max: 14, title: "Enforcer", color: "#10B981" },
-  { max: 19, title: "Operator", color: "#A855F7" },
-  { max: 24, title: "Shot Caller", color: "#F59E0B" },
-  { max: 29, title: "Underboss", color: "#EC4899" },
-  { max: 999, title: "Kingpin", color: "#EF4444" },
+  { max: 10, title: "Street Thug", color: "#64748B" },
+  { max: 20, title: "Enforcer", color: "#38BDF8" },
+  { max: 30, title: "Operative", color: "#A855F7" },
+  { max: 40, title: "Kingpin", color: "#F59E0B" },
+  { max: 9999, title: "Legend", color: "#EC4899" },
 ];
 
 export default function HUD({ toggleSidebar, showMenu, onSettings, onOpenSocial }) {
@@ -104,8 +102,9 @@ export default function HUD({ toggleSidebar, showMenu, onSettings, onOpenSocial 
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1.6fr 1fr", gap: 10 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1.4fr 0.9fr", gap: 10 }}>
         <StatBlock testid="hud-cash" Icon={DollarSign} iconColor="#10B981" label="CASH" value={`$ ${user.money.toLocaleString()}`} valueColor="#10B981" />
+        <StatBlock testid="hud-bank" Icon={Landmark} iconColor="#38BDF8" label="BANK" value={`$ ${(user.bank || 0).toLocaleString()}`} valueColor="#38BDF8" />
         <div data-testid="hud-heat" style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 18px", background: "#08080f", border: "1px solid #14141f", minWidth: 0 }}>
           <div style={{ width: 34, height: 34, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.4)" }}>
             <Flame size={16} color="#EF4444" style={{ filter: "drop-shadow(0 0 4px #EF4444aa)" }} />

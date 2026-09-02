@@ -35,7 +35,15 @@ export default function PvP() {
 
   return (
     <div style={{ display: "grid", gap: 22 }}>
-      <div>
+      <div style={{ position: "relative", overflow: "hidden", height: 150, border: "1px solid rgba(239,68,68,0.35)" }} data-testid="pvp-banner">
+        <img src="/dashboard/bg_pvp.png" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.55 }} />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(2,2,4,0.92) 0%, rgba(2,2,4,0.3) 100%)" }} />
+        <div style={{ position: "relative", padding: 24 }}>
+          <h2 className="font-display" style={{ fontSize: 28, color: "#fff", letterSpacing: "0.1em", fontWeight: 900 }}>PVP · GANG WARFARE</h2>
+          <div style={{ color: "#cbd5e1", fontSize: 13, maxWidth: 560 }}>Attack other operators' properties. High security = high loss for the attacker. Requires level 5+.</div>
+        </div>
+      </div>
+      <div style={{ display: "none" }}>
         <h2 className="font-display" style={{ fontSize: 26, color: "#fff", letterSpacing: "0.1em", marginBottom: 4 }}>PVP · GANG WARFARE</h2>
         <div style={{ color: "#64748B", fontSize: 13 }}>Attack other operators' properties. High security = high loss for the attacker. Requires level 5+.</div>
       </div>

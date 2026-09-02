@@ -21,7 +21,7 @@ function MoneyCard({ label, value, tiers, color }) {
   );
 }
 
-function ItemStack({ item, qty, onConsume, canConsume }) {
+function ItemStack({ item, qty, onConsume, canConsume, onOpen }) {
   return (
     <div data-testid={`inv-item-${item.id}`} style={{ border: "1px solid #1a2436", padding: 12, display: "grid", gap: 8 }}>
       <div style={{ position: "relative", height: 90, overflow: "hidden", background: "#05060f" }}>
@@ -30,6 +30,7 @@ function ItemStack({ item, qty, onConsume, canConsume }) {
       </div>
       <div className="font-display" style={{ color: "#fff", fontSize: 12 }}>{item.name.toUpperCase()}</div>
       {canConsume && <button data-testid={`consume-${item.id}`} onClick={() => onConsume(item)} className="btn-primary" style={{ padding: "6px 10px", fontSize: 10 }}>USE</button>}
+      {onOpen && <button data-testid={`open-crate-${item.id}`} onClick={() => onOpen(item)} className="btn-primary" style={{ padding: "6px 10px", fontSize: 10 }}>OPEN CRATE</button>}
     </div>
   );
 }
@@ -52,6 +53,7 @@ export default function Inventory() {
   const equip = async (item_id, slot) => { try { await api.post("/player/equip", { item_id, slot }); await refresh(); toast.success("Equipped."); } catch (e) { toast.error(fmtDetail(e.response?.data?.detail)); } };
   const repair = async (v) => { try { const { data } = await api.post("/player/repair", { vehicle_id: v.id }); await refresh(); toast.success(`Repaired for $${data.cost}`); } catch (e) { toast.error(fmtDetail(e.response?.data?.detail)); } };
   const consume = async (item) => { try { const { data } = await api.post("/inventory/consume", { item_id: item.id }); await refresh(); toast.success(data.message); } catch (e) { toast.error(fmtDetail(e.response?.data?.detail)); } };
+  const openCrate = async (item) => { try { const { data } = await api.post("/inventory/open-crate", { item_id: item.id }); await refresh(); toast[data.profit >= 0 ? "success" : "error"](data.message); } catch (e) { toast.error(fmtDetail(e.response?.data?.detail)); } };
 
   const invEntries = Object.entries(inv).filter(([, q]) => q > 0);
   const droneEntries = Object.entries(drones).filter(([, q]) => q > 0);
@@ -83,7 +85,7 @@ export default function Inventory() {
         <div className="card-glow" style={{ padding: 20 }}>
           <div className="label-caps neon-pink" style={{ marginBottom: 12 }}>GEAR · CRATES · DRONES</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 10 }}>
-            {invEntries.filter(([id]) => !consumableIds.has(id)).map(([id, q]) => { const it = findItem(id); if (!it) return null; return <ItemStack key={id} item={it} qty={q} canConsume={false} />; })}
+            {invEntries.filter(([id]) => !consumableIds.has(id)).map(([id, q]) => { const it = findItem(id); if (!it) return null; return <ItemStack key={id} item={it} qty={q} canConsume={false} onOpen={it.type === "crate" ? openCrate : undefined} />; })}
             {droneEntries.map(([id, q]) => { const it = findItem(id); if (!it) return null; return <ItemStack key={id} item={it} qty={q} canConsume={false} />; })}
           </div>
         </div>
@@ -150,7 +152,12 @@ export default function Inventory() {
               <div key={v.instance_id || v.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: 12, border: `1px solid ${eq ? "rgba(0,240,255,0.5)" : "#1a2436"}` }}>
                 <div>
                   <div className="font-display" style={{ color: "#fff" }}>{meta.name}</div>
-                  <div style={{ fontSize: 11, color: "#94a3b8" }}>SPD {meta.speed} · ESC {meta.escape} · CAP {meta.capacity} · CND {v.condition}%</div>
+                  <div style={{ fontSize: 11, color: "#94a3b8" }}>SPD {meta.speed} · ESC {meta.escape} · SEATS {meta.capacity}</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
+                    <span className="label-caps" style={{ fontSize: 9, color: v.condition > 60 ? "#10B981" : v.condition > 30 ? "#F59E0B" : "#EF4444" }}>DURABILITY {v.condition}%</span>
+                    <div style={{ width: 120, height: 5, background: "#0a0a12" }}><div style={{ width: `${v.condition}%`, height: "100%", background: v.condition > 60 ? "#10B981" : v.condition > 30 ? "#F59E0B" : "#EF4444" }} /></div>
+                    <span style={{ fontSize: 9, color: "#64748B" }}>max {meta.max_durability}</span>
+                  </div>
                 </div>
                 <div style={{ display: "flex", gap: 8 }}>
                   {dmg > 0 && <button data-testid={`repair-${v.id}`} onClick={() => repair(v)} className="btn-outline" style={{ padding: "8px 14px", fontSize: 11 }}>REPAIR (${dmg * 50})</button>}

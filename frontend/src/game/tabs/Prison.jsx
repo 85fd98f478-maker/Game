@@ -33,7 +33,10 @@ export default function Prison() {
 
   return (
     <div style={{ display: "grid", gap: 20 }} data-testid="prison-tab">
-      <div className="hologram-border card-glow" style={{ padding: 30, borderColor: "rgba(239,68,68,0.5)", background: "linear-gradient(135deg, rgba(239,68,68,0.06), transparent)" }}>
+      <div className="hologram-border card-glow" style={{ padding: 30, borderColor: "rgba(239,68,68,0.5)", position: "relative", overflow: "hidden" }}>
+        <img src="/dashboard/bg_prison.png" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.35 }} />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(10,5,8,0.85), rgba(2,2,4,0.7))" }} />
+        <div style={{ position: "relative" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
           <Lock size={26} color="#EF4444" />
           <div className="font-display" style={{ fontSize: 30, color: "#EF4444", letterSpacing: "0.15em", fontWeight: 900 }} data-testid="in-prison">IN PRISON</div>
@@ -44,6 +47,7 @@ export default function Prison() {
           <div><div className="label-caps">REASON FOR ARREST</div><div className="font-display" style={{ fontSize: 16, color: "#EF4444" }} data-testid="prison-reason">{status.reason}</div></div>
         </div>
         <div style={{ marginTop: 16, padding: 12, border: "1px solid rgba(239,68,68,0.3)", color: "#EF4444", fontSize: 12 }}>All heists are locked while you're incarcerated. Pay bail to be released immediately, or wait out your sentence.</div>
+        </div>
       </div>
 
       <div className="card-glow" style={{ padding: 22, maxWidth: 460 }}>

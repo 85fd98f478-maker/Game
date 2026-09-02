@@ -162,7 +162,11 @@ MEDICINE_ITEMS = [
 # Black Market consumables + special goods (illegal, cash only)
 BLACKMARKET_ITEMS = [
     {"id": "bm_combat_stim", "name": "Combat Stim", "type": "bm_medicine", "price": 950, "health": 70, "stamina": 25, "img": "medicine_basic", "legal": False, "desc": "Black-market cocktail. Instant heal + stamina."},
-    {"id": "bm_crate", "name": "Contraband Crate", "type": "crate", "price": 2600, "img": "contraband_crate", "legal": False, "desc": "Sealed crate of illegal goods. Store or resell."},
+    {"id": "crate_tobacco", "name": "Tobacco Crate", "type": "crate", "good": "tobacco", "units": 40, "price": 1000, "img": "crate_tobacco", "legal": False, "desc": "Sealed crate of bootleg tobacco. Crack it open for cartons."},
+    {"id": "crate_weed", "name": "Weed Crate", "type": "crate", "good": "weed", "units": 25, "price": 1150, "img": "crate_weed", "legal": False, "desc": "Sealed crate of weed. Crack it open for product."},
+    {"id": "crate_alcohol", "name": "Moonshine Crate", "type": "crate", "good": "alcohol", "units": 18, "price": 1300, "img": "crate_alcohol", "legal": False, "desc": "Sealed crate of moonshine. Crack it open for crates of liquor."},
+    {"id": "crate_counterfeit", "name": "Counterfeit Crate", "type": "crate", "good": "counterfeit", "units": 5, "price": 1600, "img": "crate_counterfeit", "legal": False, "desc": "Sealed crate of forged cash. Crack it open for stacks."},
+    {"id": "crate_cocaine", "name": "Cocaine Crate", "type": "crate", "good": "cocaine", "units": 2, "price": 1900, "img": "crate_cocaine", "legal": False, "desc": "Sealed crate of cocaine. Crack it open — value varies."},
 ]
 DRONES = [
     {"id": "drone_recon", "name": "Recon Drone", "type": "drone", "price": 8000, "focus": "stealth", "img": "drone_recon", "legal": False, "tier": 1,
@@ -206,10 +210,30 @@ def max_health(level):
 def max_stamina(level):
     return CONFIG["base_stamina"] + (level - 1) * CONFIG["stamina_per_level"]
 
+# Explicit per-vehicle crew capacity overrides (fall back to category map)
+VEHICLE_CAP = {"starter": 2, "compact_x": 2, "hatchback": 2, "nightfall": 2, "chrome_r": 2,
+               "neon_bike": 2, "muscle_v8": 4, "phantom_s": 4, "hypercar": 2, "prototype_x": 4,
+               "armored_suv": 6, "stealth_van": 6, "riot_truck": 8}
+
 def vehicle_capacity(veh_meta):
     if not veh_meta:
-        return 4
-    return CONFIG["vehicle_capacity_by_cat"].get(veh_meta.get("cat"), 4)
+        return 2
+    if veh_meta.get("id") in VEHICLE_CAP:
+        return VEHICLE_CAP[veh_meta["id"]]
+    return CONFIG["vehicle_capacity_by_cat"].get(veh_meta.get("cat"), 2)
+
+def vehicle_max_durability(veh_meta):
+    """Max durability scales significantly with price. Cheap ~120, top-tier ~600."""
+    if not veh_meta:
+        return 100
+    return int(100 + min(500, (veh_meta.get("price", 0) / 220000) * 500))
+
+def vehicle_wear(veh_meta, difficulty):
+    """Gradual wear per heist. Heavier heists wear a bit more; expensive vehicles wear less."""
+    dur = vehicle_max_durability(veh_meta)
+    base = 4 + difficulty * 0.8            # ~4.8 .. 12 wear points
+    factor = 100 / dur                     # expensive (high dur) -> smaller fraction
+    return max(1, int(round(base * factor)))
 
 def heat_level(heat):
     if heat <= 25: return "Low"
@@ -512,7 +536,7 @@ async def create_character(data: CharacterIn, request: Request):
 # ========== CATALOG ==========
 @api.get("/catalog")
 async def catalog():
-    vehicles = [{**v, "capacity": vehicle_capacity(v)} for v in VEHICLES]
+    vehicles = [{**v, "capacity": vehicle_capacity(v), "max_durability": vehicle_max_durability(v)} for v in VEHICLES]
     heists = [{**h, "stamina_cost": CONFIG["heist_stamina_cost"].get(h["type"], 20), "crew_max": CONFIG["heist_crew_max"].get(h["type"], 4)} for h in HEISTS]
     return {"specializations": SPECIALIZATIONS, "weapons": WEAPONS, "armors": ARMORS, "vehicles": vehicles, "npcs": NPCS, "heists": heists, "districts": DISTRICTS, "ammo_prices": AMMO_PRICES, "properties": PROPERTIES, "businesses": BUSINESSES,
             "food": FOOD_ITEMS, "drinks": DRINK_ITEMS, "medicine": MEDICINE_ITEMS, "blackmarket_items": BLACKMARKET_ITEMS, "drones": DRONES, "config": CONFIG}
@@ -852,8 +876,8 @@ def simulate_heist(user: dict, heist: dict, crew_ids: List[str], vehicle_id: str
     hp_loss = int(100 * hp_loss_pct)
     if armor:
         hp_loss = int(hp_loss * (1 - armor["damage_reduction"] / 100))
-    # veh damage
-    veh_dmg = int(hp_loss_pct * 40)
+    # veh damage — gradual, scales with heist difficulty, less on expensive vehicles
+    veh_dmg = vehicle_wear(veh_data, difficulty)
 
     # ammo used
     ammo_used = 0
@@ -951,8 +975,24 @@ async def run_heist(data: HeistIn, request: Request):
     result = simulate_heist(user, heist, data.crew_ids, data.vehicle_id, drone_id, data.player_ids)
     rew = result["rewards"]
 
-    # apply deltas
-    user["money"] += rew["cash"]
+    # split cash evenly among real players (NPCs never count); runner keeps one share
+    real_players = []
+    if data.player_ids:
+        real_players = await db.users.find({"id": {"$in": data.player_ids}}, {"_id": 0, "id": 1}).to_list(20)
+    shares = 1 + len(real_players)
+    pot = rew["cash"]
+    my_share = pot // shares if shares > 0 else pot
+    rew["pot"] = pot
+    rew["your_share"] = my_share
+    rew["cash"] = my_share  # what the runner actually receives
+    if real_players and my_share > 0:
+        per = my_share
+        for rp in real_players:
+            await db.users.update_one({"id": rp["id"]}, {"$inc": {"money": per, "stats.total_earnings": per}})
+            await notify(rp["id"], "heist_payout", "Heist Payout", f"You received ${per:,} as your share of {heist['name']}.", link="heists")
+
+    # apply deltas (runner gets only their share)
+    user["money"] += my_share
     user["xp"] += rew["xp"]
     user["reputation"] = max(0, user["reputation"] + rew["rep"])
     user["heat"] = min(100, max(0, user["heat"] + rew["heat"]))
@@ -977,8 +1017,8 @@ async def run_heist(data: HeistIn, request: Request):
         mates = await db.users.find({"id": {"$in": data.player_ids}, "gang_id": gang_id}, {"_id": 0, "id": 1}).to_list(20)
         if mates:
             user["stats"]["gang_heists"] = user["stats"].get("gang_heists", 0) + 1
-    if gang_id and rew["cash"] > 0:
-        await db.gangs.update_one({"id": gang_id}, {"$inc": {"earnings": rew["cash"]}})
+    if gang_id and pot > 0:
+        await db.gangs.update_one({"id": gang_id}, {"$inc": {"earnings": pot}})
 
     # drone loss — permanently remove
     drone_lost = result.get("drone_loss") and drone_id
@@ -1541,6 +1581,36 @@ async def consume_item(data: ConsumeIn, request: Request):
     await db.users.update_one({"id": user["id"]}, {"$set": {"inventory": inv, "health": user["health"], "stamina": user["stamina"], "food_buffer": user.get("food_buffer", 0)}})
     return {"ok": True, "message": msg, "health": user["health"], "stamina": user["stamina"], "food_buffer": user.get("food_buffer", 0), "inventory": inv}
 
+# ---------- CRATE OPENING ----------
+@api.post("/inventory/open-crate")
+async def open_crate(data: ConsumeIn, request: Request):
+    user = await get_current_user(request)
+    item = find_any_item(data.item_id)
+    if not item or item.get("type") != "crate":
+        raise HTTPException(400, "Not a crate")
+    inv = user.get("inventory", {})
+    if inv.get(item["id"], 0) < 1:
+        raise HTTPException(400, "You don't have this crate")
+    good = find_item(CONTRABAND, item.get("good"))
+    if not good:
+        raise HTTPException(400, "Crate has no product")
+    price = _contraband_prices()[good["id"]]
+    base_units = item.get("units", 10)
+    # balanced: yielded units vary so total value can be a bit under or over the crate price
+    units = max(1, int(round(base_units * random.uniform(0.6, 1.5))))
+    value = price * units
+    holdings = user.get("contraband", {})
+    holdings[good["id"]] = holdings.get(good["id"], 0) + units
+    inv[item["id"]] -= 1
+    if inv[item["id"]] <= 0:
+        inv.pop(item["id"], None)
+    await db.users.update_one({"id": user["id"]}, {"$set": {"inventory": inv, "contraband": holdings}})
+    profit = value - item["price"]
+    return {"ok": True, "good_id": good["id"], "good_name": good["name"], "units": units, "unit": good["unit"],
+            "value": value, "paid": item["price"], "profit": profit, "contraband": holdings, "inventory": inv,
+            "message": f"Opened {item['name']}: {units} {good['unit']}(s) of {good['name']} worth ~${value:,} (paid ${item['price']:,})."}
+
+
 # ---------- DRONES ----------
 @api.post("/drone/buy")
 async def buy_drone(data: BuyItemIn, request: Request):
@@ -1645,6 +1715,44 @@ async def send_message(data: MessageIn, request: Request):
     await notify(to["id"], "message", "New Message", f"{user['username']}: {data.body[:60]}", link="messages")
     doc.pop("_id", None)
     return {"ok": True, "message": doc}
+
+# ---------- GANG CHAT (uses existing messages infra, gang channel) ----------
+class GangChatIn(BaseModel):
+    body: str
+
+@api.get("/messages/gang")
+async def gang_chat(request: Request, limit: int = 80):
+    user = await get_current_user(request)
+    if not user.get("gang_id"):
+        return {"messages": [], "gang": None}
+    msgs = await db.gang_messages.find({"gang_id": user["gang_id"]}, {"_id": 0}).sort("created_at", -1).to_list(limit)
+    return {"messages": list(reversed(msgs))}
+
+@api.post("/messages/gang/send")
+async def gang_chat_send(data: GangChatIn, request: Request):
+    user = await get_current_user(request)
+    if not user.get("gang_id"):
+        raise HTTPException(400, "You are not in a gang")
+    doc = {"id": str(uuid.uuid4()), "gang_id": user["gang_id"], "from_id": user["id"], "from_username": user["username"],
+           "body": data.body[:1000], "created_at": datetime.now(timezone.utc).isoformat()}
+    await db.gang_messages.insert_one(doc)
+    doc.pop("_id", None)
+    return {"ok": True, "message": doc}
+
+# ---------- FRIEND CHAT (direct-message conversation view) ----------
+@api.get("/messages/with/{username}")
+async def messages_with(username: str, request: Request, limit: int = 80):
+    user = await get_current_user(request)
+    other = await db.users.find_one({"username": username})
+    if not other:
+        raise HTTPException(404, "User not found")
+    msgs = await db.messages.find({"$or": [
+        {"from_id": user["id"], "to_id": other["id"]},
+        {"from_id": other["id"], "to_id": user["id"]},
+    ]}, {"_id": 0}).sort("created_at", -1).to_list(limit)
+    await db.messages.update_many({"from_id": other["id"], "to_id": user["id"], "read": False}, {"$set": {"read": True}})
+    return {"messages": list(reversed(msgs))}
+
 
 @api.post("/messages/read")
 async def read_message(data: IdIn, request: Request):
