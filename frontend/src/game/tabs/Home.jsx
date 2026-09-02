@@ -183,8 +183,6 @@ export default function HomeTab({ setTab }) {
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(3,3,8,0.7) 0%, transparent 45%)" }} />
         </div>
 
-        <DailyContract setTab={setTab} />
-
         <div className="cards-5" style={{ display: "grid", gap: 12 }}>
           <BigCard testid="home-card-inventory" title="INVENTORY" color="#A855F7" image={CARD_BG.inventory} desc="Manage your items, ammo, gear and more." onClick={() => setTab("inventory")} />
           <BigCard testid="home-card-arsenal" title="ARSENAL" color="#EF4444" image={CARD_BG.arsenal} desc="Buy, upgrade and customize weapons." onClick={() => setTab("arsenal")} />
@@ -236,6 +234,8 @@ export default function HomeTab({ setTab }) {
           </FeaturedCard>}
 
         </div>
+
+        <DailyContract setTab={setTab} />
       </div>
 
       <div style={{ display: "flex", flexDirection: "column" }}>
@@ -298,7 +298,7 @@ export default function HomeTab({ setTab }) {
           {dailyIncome === 0 && user.hired_crew.length < 3 && user.heat >= 20 && <div style={{ color: "#64748B", fontSize: 11 }}>No active effects.</div>}
         </RightBlock>
 
-        <RightBlock title="UPCOMING EVENTS" color="#F59E0B" testid="upcoming-events">
+        <RightBlock title="RECENT EVENTS" color="#F59E0B" testid="recent-events">
           {ops.slice(0, 2).map((o, i) => <EffectRow key={i} Icon={Target} iconColor="#EC4899" label={`HEIST · ${o.outcome}`} sub={o.heist_name} time={timeAgo(o.timestamp) + " ago"} />)}
           {raids.slice(0, 2).map((r, i) => <EffectRow key={i} Icon={Skull} iconColor="#EF4444" label={r.attacker === user.username ? "RAID SENT" : "RAID RECEIVED"} sub={r.attacker === user.username ? r.defender : r.attacker} time={timeAgo(r.timestamp) + " ago"} />)}
           {ops.length === 0 && raids.length === 0 && <div style={{ color: "#64748B", fontSize: 11 }}>No recent activity.</div>}

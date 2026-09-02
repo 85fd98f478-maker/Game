@@ -107,3 +107,23 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 560px) {
   .cards-5, .cards-4, .cards-3 { grid-template-columns: 1fr; }
 }
+
+/* HUD top bar — responsive so HP/STA/Heat/Rep stay aligned when window is not maximized */
+.hud-header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 60;
+  background: #030307; border-bottom: 1px solid #14141f;
+  height: 96px; display: grid; grid-template-columns: 270px 1fr auto;
+  align-items: center; gap: 14px; padding: 0 18px;
+}
+.hud-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 1400px) {
+  .hud-header { grid-template-columns: 250px 1fr auto; gap: 10px; }
+}
+@media (max-width: 1150px) {
+  .hud-header { grid-template-columns: 230px 1fr auto; gap: 8px; padding: 0 12px; }
+  .hud-stats { gap: 6px; }
+  .hud-stats > div { padding-left: 10px !important; padding-right: 10px !important; }
+}
+@media (max-width: 920px) {
+  .hud-header { grid-template-columns: auto 1fr auto; }
+}

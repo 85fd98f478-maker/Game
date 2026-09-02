@@ -80,7 +80,7 @@ export default function HUD({ toggleSidebar, showMenu, onSettings, onOpenSocial 
   const rank = RANKS.find(r => user.level <= r.max) || RANKS[RANKS.length - 1];
 
   return (
-    <header style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 60, background: "#030307", borderBottom: "1px solid #14141f", height: 96, display: "grid", gridTemplateColumns: "270px 1fr auto", alignItems: "center", gap: 14, padding: "0 18px" }} data-testid="hud">
+    <header className="hud-header" data-testid="hud">
       <div style={{ display: "flex", alignItems: "center", gap: 14 }} data-testid="hud-user">
         {showMenu && <button data-testid="menu-btn" onClick={toggleSidebar} style={{ width: 40, height: 40, border: "1px solid #14141f", background: "#08080f", display: "flex", alignItems: "center", justifyContent: "center", color: "#EC4899" }}><Menu size={18} /></button>}
         <div style={{ position: "relative", width: 62, height: 62, border: `1px solid ${specColor}55`, flexShrink: 0 }} data-testid="hud-avatar">
@@ -111,7 +111,7 @@ export default function HUD({ toggleSidebar, showMenu, onSettings, onOpenSocial 
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(140px,1fr))", gap: 10 }}>
+      <div className="hud-stats">
         <StatBlock testid="hud-cash" Icon={DollarSign} iconColor="#10B981" label="CASH" value={abbrMoney(user.money)} title={`$${(user.money || 0).toLocaleString()}`} valueColor="#10B981" />
         <StatBlock testid="hud-bank" Icon={Landmark} iconColor="#38BDF8" label="BANK" value={abbrMoney(user.bank || 0)} title={`$${(user.bank || 0).toLocaleString()}`} valueColor="#38BDF8" />
         <div data-testid="hud-heat" style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 18px", background: "#08080f", border: "1px solid #14141f", minWidth: 0 }}>
