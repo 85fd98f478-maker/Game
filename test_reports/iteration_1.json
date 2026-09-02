@@ -1,0 +1,41 @@
+{
+  "summary": "Full backend + frontend QA for 'The Law of Silence' new feature set (unified items, market payment selector, black market cash-only, bank 10% fee, heists with stamina/capacity/prison, friends/messages/notifications, gang system + inventory, rankings, businesses collect). Added /app/backend/tests/test_new_features.py (24 tests covering all requested endpoints) and executed frontend Playwright smoke through Login → HUD → Market buy w/ modal (cash) → Inventory consume → BlackMarket cash-only → Bank fee preview → Heists success-chance → Prison → Social → Gang → Progress → Garage. All backend tests pass (29 passed, 3 rational skips). All frontend UI flows pass end-to-end.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_new_features.py",
+    "/app/backend/tests/test_contraband_market.py",
+    "/app/test_reports/pytest/all.xml",
+    "/app/test_reports/pytest/new_features.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "server.py is 2022 lines — consider splitting into routers (auth, market, heist, gang, social) for maintainability.",
+    "buy_drone endpoint (/drone/buy) mutates data.item_id then delegates; the mutation is a no-op — harmless but confusing dead code.",
+    "compute_success_chance uses find_item(NPCS, cid) for crew_ids but /heist/run does NOT verify the caller actually owns / has hired the passed crew NPCs. This could let a player pass any npc_id to inflate spec/crew bonuses. Recommend validating cid in user['hired_crew'] inside run_heist.",
+    "test_heist_capacity_gate: with unowned crew ids the API returns 400 for another reason (capacity or spec check) rather than a distinct 'unowned crew' error; the response reason is not distinguishable from capacity error.",
+    "Heist ‘capacity: -0.15’ penalty in compute_success_chance is applied even when vehicle_capacity is missing — vehicle ownership is only enforced in /heist/run, not the /heist/success-chance preview, so preview can leak info for unowned vehicles.",
+    "search_users only returns id via serialization? Currently it excludes id in the returned dict (see _return list comprehension). That's fine, but consider consistent id inclusion so frontend can link users.",
+    "Notifications 'mark read' uses id == 'all' magic string; consider a dedicated endpoint or clear API contract.",
+    "gang/inventory/withdraw does not enforce that the withdrawn item goes to the requesting user's inventory limits — infinite consumables possible via deposit/withdraw cycle by leader. Low-priority abuse vector.",
+    "Frontend BlackMarket.jsx correctly hides bank option; PaymentSelector.jsx displays a proper 'ILLEGAL ACTIVITY · CASH ONLY' warning when allowed=['cash'] only.",
+    "Frontend does not display a preview of computed 10% fee inside Market/Garage buy modal (PaymentSelector accepts feePct prop but Market.jsx passes 0). Only Bank tab shows a fee preview. Consider passing feePct=0 for market (correct — no fee on purchases) but confirming this is intended."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_new_features.py"
+  ],
+  "success_rate": {"backend": "100% (29/29 passing, 3 skipped due to insufficient starting cash)", "frontend": "100% of scripted flows"},
+  "test_credentials": "qa_main@neoncity.io / pass123 (from /app/memory/test_credentials.md)",
+  "seed_data_creation": "Tests create fresh users with TEST_ email prefix per run; primary qa_main account used unchanged for frontend UI test (start cash mutated to $680 by end).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend tests at /app/backend/tests/test_new_features.py cover all new endpoints and pass reliably. Frontend flows validated: login, market cash/bank selector, inventory consume, BM cash-only, bank fee preview (10%), heist success chance, prison, social/gang/progress/garage nav. Only recommendations are code-quality (see critical_code_review_comments) — no functional bugs found. If retesting, primary qa_main account cash is ~$680; may need to top up via /api/market/sell-contraband if running full flow again. Heist run may put the account in prison; use /api/prison/pay-bail (cash) to recover.",
+  "rca of the issue": "No blocking issues discovered. Only note: crew validation gap in /heist/run (does not verify hired_crew ownership of NPCs passed as crew_ids). Recommend adding a guard: if cid not in user['hired_crew'] -> 400. Low risk since NPCs cost money to hire and success chance is capped at 92%."
+}
