@@ -92,6 +92,44 @@ function timeAgo(iso) {
   return `${Math.floor(s / 86400)}d`;
 }
 
+function DailyContract({ setTab }) {
+  const [dc, setDc] = useState(null);
+  const [left, setLeft] = useState(0);
+  useEffect(() => { (async () => { try { const { data } = await api.get("/daily-contract"); setDc(data); setLeft(data.seconds_to_rotation); } catch {} })(); }, []);
+  useEffect(() => { const t = setInterval(() => setLeft((l) => (l <= 1 ? 0 : l - 1)), 1000); return () => clearInterval(t); }, []);
+  if (!dc) return null;
+  const h = dc.heist;
+  const fmtT = (s) => `${Math.floor(s / 3600)}h ${Math.floor((s % 3600) / 60)}m`;
+  const statusColor = dc.status === "COMPLETED" ? "#10B981" : dc.status === "COOLDOWN" ? "#F59E0B" : "#00F0FF";
+  const statusText = dc.completed ? "COMPLETED" : dc.cooldown_remaining > 0 ? "FAILED — AVAILABLE AFTER COOLDOWN" : "AVAILABLE";
+  const openIt = () => { window.__openHeist = h.id; setTab("heists"); };
+  return (
+    <div className="fade-in-up" data-testid="daily-contract-card" style={{ border: "1px solid rgba(245,158,11,0.4)", background: "linear-gradient(135deg, rgba(245,158,11,0.08), rgba(8,8,15,0.6))", padding: 18 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+        <div className="font-display" style={{ color: "#F59E0B", fontSize: 13, letterSpacing: "0.2em", fontWeight: 800 }}>◆ DAILY CONTRACT</div>
+        <div className="label-caps" style={{ fontSize: 9, color: "#64748B" }}>ROTATES IN <span style={{ color: "#F59E0B" }}>{fmtT(left)}</span></div>
+      </div>
+      <div className="font-display" style={{ color: "#fff", fontSize: 22, margin: "6px 0" }}>{h.name.toUpperCase()}</div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(110px,1fr))", gap: 10, margin: "10px 0" }}>
+        <div><div className="label-caps" style={{ fontSize: 8 }}>ZONE</div><div style={{ color: "#cbd5e1", fontSize: 12, textTransform: "capitalize" }}>{h.district.replace(/_/g, " ")}</div></div>
+        <div><div className="label-caps" style={{ fontSize: 8 }}>DIFFICULTY</div><div style={{ color: "#cbd5e1", fontSize: 12 }}>{h.difficulty}/10</div></div>
+        <div><div className="label-caps" style={{ fontSize: 8 }}>REQ LEVEL</div><div style={{ color: "#cbd5e1", fontSize: 12 }}>{h.min_level}</div></div>
+        <div><div className="label-caps" style={{ fontSize: 8 }}>STAMINA</div><div style={{ color: "#38BDF8", fontSize: 12 }}>{h.stamina_cost}</div></div>
+        <div><div className="label-caps" style={{ fontSize: 8 }}>CREW</div><div style={{ color: "#cbd5e1", fontSize: 12 }}>{h.min_crew}-{h.crew_max}</div></div>
+      </div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8, marginTop: 6 }}>
+        <div>
+          <div style={{ fontSize: 11, color: "#94a3b8" }}>Normal: {fmtMoney(dc.normal_reward_min)}–{fmtMoney(dc.normal_reward_max)}</div>
+          <div style={{ fontSize: 13 }}><span style={{ color: "#F59E0B" }}>+30% →</span> <span className="font-display neon-gold">{fmtMoney(dc.daily_reward_min)}–{fmtMoney(dc.daily_reward_max)}</span></div>
+        </div>
+        <div className="label-caps" data-testid="daily-status" style={{ fontSize: 9, color: statusColor, border: `1px solid ${statusColor}55`, padding: "4px 8px" }}>{statusText}</div>
+      </div>
+      <button data-testid="daily-start" onClick={openIt} disabled={dc.completed} className="btn-primary" style={{ width: "100%", padding: 11, marginTop: 12, fontSize: 12, opacity: dc.completed ? 0.5 : 1 }}>{dc.completed ? "ALREADY COMPLETED TODAY" : "▶ START CONTRACT HEIST"}</button>
+    </div>
+  );
+}
+
+
 export default function HomeTab({ setTab }) {
   const { user, catalog, refresh } = useAuth();
   const spec = catalog?.specializations.find(s => s.id === user.specialization);
@@ -144,6 +182,8 @@ export default function HomeTab({ setTab }) {
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, transparent 0%, rgba(3,3,8,0.35) 55%, #050508 100%)" }} />
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(3,3,8,0.7) 0%, transparent 45%)" }} />
         </div>
+
+        <DailyContract setTab={setTab} />
 
         <div className="cards-5" style={{ display: "grid", gap: 12 }}>
           <BigCard testid="home-card-inventory" title="INVENTORY" color="#A855F7" image={CARD_BG.inventory} desc="Manage your items, ammo, gear and more." onClick={() => setTab("inventory")} />

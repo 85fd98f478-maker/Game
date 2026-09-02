@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../AuthContext";
-import { LayoutDashboard, User, Briefcase, Crosshair, Car, Users, Target, Home, Building2, Map, Trophy, LogOut, ShoppingCart, Skull, X, Shield, Users2, Swords, Lock } from "lucide-react";
+import { LayoutDashboard, User, Briefcase, Crosshair, Car, Users, Target, Home, Building2, Map, Trophy, LogOut, ShoppingCart, Skull, X, Shield, Users2, Swords, Lock, Dices } from "lucide-react";
 
 const TABS = [
   { id: "home", label: "DASHBOARD", icon: LayoutDashboard },
@@ -16,6 +16,7 @@ const TABS = [
   { id: "progress", label: "PROGRESS", icon: Trophy },
   { id: "market", label: "MARKET", icon: ShoppingCart },
   { id: "blackmarket", label: "BLACK MARKET", icon: Skull },
+  { id: "casino", label: "CASINO", icon: Dices },
   { id: "gang", label: "GANG", icon: Shield },
   { id: "social", label: "SOCIAL", icon: Users2 },
   { id: "prison", label: "PRISON", icon: Lock },

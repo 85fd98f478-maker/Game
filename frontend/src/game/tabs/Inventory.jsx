@@ -1,7 +1,16 @@
 import { useAuth } from "../../AuthContext";
 import { api, fmtDetail, fmtMoney } from "../../api";
 import { toast } from "sonner";
-import { ITEM_IMG_BY_ID, CASH_TIERS, BANK_TIERS, tierImg } from "../images";
+import { ITEM_IMG_BY_ID, CASH_TIERS, BANK_TIERS, tierImg, WEAPON_ITEM_IMG, WEAPON_IMG, ARMOR_IMG, VEHICLE_ITEM_IMG, VEHICLE_IMG } from "../images";
+
+const weaponImg = (meta) => WEAPON_ITEM_IMG[meta.id] || WEAPON_IMG[meta.cat] || WEAPON_IMG.pistol;
+const vehicleImg = (meta) => VEHICLE_ITEM_IMG[meta.id] || VEHICLE_IMG[meta.cat] || VEHICLE_IMG.compact;
+const armorImg = (meta) => ARMOR_IMG[meta.id] || ARMOR_IMG.light_armor;
+const Thumb = ({ src, size = 56 }) => (
+  <div style={{ width: size, height: size, flexShrink: 0, border: "1px solid #1a2436", overflow: "hidden", background: "#05060f" }}>
+    <img src={src} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+  </div>
+);
 
 const SLOTS = ["primary", "secondary", "melee", "armor", "vehicle"];
 
@@ -97,10 +106,14 @@ export default function Inventory() {
           {SLOTS.map((s) => {
             const id = user.equipped[s];
             let item = s === "armor" ? findA(id) : s === "vehicle" ? findV(id) : findW(id);
+            const img = item ? (s === "armor" ? armorImg(item) : s === "vehicle" ? vehicleImg(item) : weaponImg(item)) : null;
             return (
-              <div key={s} data-testid={`slot-${s}`} style={{ border: "1px solid #1a2436", padding: 14, background: id ? "rgba(0,240,255,0.04)" : "transparent" }}>
-                <div className="label-caps neon-pink">{s.toUpperCase()}</div>
-                <div className="font-display" style={{ fontSize: 15, color: id ? "#fff" : "#475569", marginTop: 4 }}>{item ? item.name.toUpperCase() : "— EMPTY —"}</div>
+              <div key={s} data-testid={`slot-${s}`} style={{ border: "1px solid #1a2436", padding: 14, background: id ? "rgba(0,240,255,0.04)" : "transparent", display: "flex", alignItems: "center", gap: 12 }}>
+                {img ? <Thumb src={img} size={48} /> : <div style={{ width: 48, height: 48, flexShrink: 0, border: "1px dashed #1a2436", background: "#05060f" }} />}
+                <div>
+                  <div className="label-caps neon-pink">{s.toUpperCase()}</div>
+                  <div className="font-display" style={{ fontSize: 14, color: id ? "#fff" : "#475569", marginTop: 4 }}>{item ? item.name.toUpperCase() : "— EMPTY —"}</div>
+                </div>
               </div>
             );
           })}
@@ -116,9 +129,12 @@ export default function Inventory() {
             const equipped = user.equipped[meta.slot] === w.id;
             return (
               <div key={w.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: 12, border: `1px solid ${equipped ? "rgba(0,240,255,0.5)" : "#1a2436"}` }}>
-                <div>
-                  <div className="font-display" style={{ color: "#fff", fontSize: 14 }}>{meta.name} <span style={{ color: "#64748B", fontSize: 11 }}>× {w.qty}</span></div>
-                  <div style={{ fontSize: 11, color: "#94a3b8" }}>DMG {meta.damage} · ACC {meta.accuracy} · REL {meta.reliability}</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <Thumb src={weaponImg(meta)} />
+                  <div>
+                    <div className="font-display" style={{ color: "#fff", fontSize: 14 }}>{meta.name} <span style={{ color: "#64748B", fontSize: 11 }}>× {w.qty}</span></div>
+                    <div style={{ fontSize: 11, color: "#94a3b8" }}>DMG {meta.damage} · ACC {meta.accuracy} · REL {meta.reliability}</div>
+                  </div>
                 </div>
                 <button data-testid={`equip-w-${w.id}`} onClick={() => equip(w.id, meta.slot)} className={equipped ? "btn-outline" : "btn-primary"} style={{ padding: "8px 14px", fontSize: 11 }} disabled={equipped}>{equipped ? "EQUIPPED" : "EQUIP"}</button>
               </div>
@@ -135,7 +151,7 @@ export default function Inventory() {
             const meta = findA(a.id); if (!meta) return null; const eq = user.equipped.armor === a.id;
             return (
               <div key={a.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: 12, border: `1px solid ${eq ? "rgba(0,240,255,0.5)" : "#1a2436"}` }}>
-                <div><div className="font-display" style={{ color: "#fff" }}>{meta.name} × {a.qty}</div><div style={{ fontSize: 11, color: "#94a3b8" }}>-{meta.damage_reduction}% damage taken</div></div>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}><Thumb src={armorImg(meta)} /><div><div className="font-display" style={{ color: "#fff" }}>{meta.name} × {a.qty}</div><div style={{ fontSize: 11, color: "#94a3b8" }}>-{meta.damage_reduction}% damage taken</div></div></div>
                 <button data-testid={`equip-a-${a.id}`} onClick={() => equip(a.id, "armor")} className={eq ? "btn-outline" : "btn-primary"} style={{ padding: "8px 14px", fontSize: 11 }} disabled={eq}>{eq ? "EQUIPPED" : "EQUIP"}</button>
               </div>
             );
@@ -150,13 +166,16 @@ export default function Inventory() {
             const meta = findV(v.id); if (!meta) return null; const eq = user.equipped.vehicle === v.id; const dmg = 100 - v.condition;
             return (
               <div key={v.instance_id || v.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: 12, border: `1px solid ${eq ? "rgba(0,240,255,0.5)" : "#1a2436"}` }}>
-                <div>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <Thumb src={vehicleImg(meta)} size={64} />
+                  <div>
                   <div className="font-display" style={{ color: "#fff" }}>{meta.name}</div>
                   <div style={{ fontSize: 11, color: "#94a3b8" }}>SPD {meta.speed} · ESC {meta.escape} · SEATS {meta.capacity}</div>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
                     <span className="label-caps" style={{ fontSize: 9, color: v.condition > 60 ? "#10B981" : v.condition > 30 ? "#F59E0B" : "#EF4444" }}>DURABILITY {v.condition}%</span>
                     <div style={{ width: 120, height: 5, background: "#0a0a12" }}><div style={{ width: `${v.condition}%`, height: "100%", background: v.condition > 60 ? "#10B981" : v.condition > 30 ? "#F59E0B" : "#EF4444" }} /></div>
                     <span style={{ fontSize: 9, color: "#64748B" }}>max {meta.max_durability}</span>
+                  </div>
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: 8 }}>

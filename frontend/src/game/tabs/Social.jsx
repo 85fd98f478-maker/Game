@@ -40,7 +40,14 @@ export default function Social({ setTab }) {
 
   return (
     <div style={{ display: "grid", gap: 20 }} data-testid="social-tab">
-      <div><h2 className="font-display" style={{ fontSize: 24, color: "#fff", letterSpacing: "0.1em" }}>SOCIAL</h2><div style={{ color: "#64748B", fontSize: 13 }}>Friends, messages and notifications. Invite friends to heists for a real edge.</div></div>
+      <div style={{ position: "relative", overflow: "hidden", height: 150, border: "1px solid rgba(0,240,255,0.3)" }} data-testid="social-banner">
+        <img src="/dashboard/bg_social.png" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.55 }} />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(2,2,4,0.92) 0%, rgba(2,2,4,0.3) 100%)" }} />
+        <div style={{ position: "relative", padding: 24 }}>
+          <h2 className="font-display" style={{ fontSize: 28, color: "#fff", letterSpacing: "0.1em", fontWeight: 900 }}>SOCIAL</h2>
+          <div style={{ color: "#cbd5e1", fontSize: 13, maxWidth: 560 }}>Friends, messages and notifications. Invite friends to heists for a real edge.</div>
+        </div>
+      </div>
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
         {SUBS.map((s) => { const I = s.icon; const active = sub === s.k; return <button key={s.k} data-testid={`social-${s.k}`} onClick={() => setSub(s.k)} style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 18px", border: `1px solid ${active ? "#00F0FF" : "#1a2436"}`, background: active ? "rgba(0,240,255,0.1)" : "transparent", color: active ? "#fff" : "#94a3b8", fontFamily: "Orbitron", fontSize: 11, letterSpacing: "0.12em" }}><I size={14} /> {s.label}</button>; })}
       </div>

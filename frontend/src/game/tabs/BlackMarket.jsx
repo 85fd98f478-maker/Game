@@ -3,7 +3,7 @@ import { useAuth } from "../../AuthContext";
 import { api, fmtDetail, fmtMoney } from "../../api";
 import { toast } from "sonner";
 import { Package, RefreshCw, Radar } from "lucide-react";
-import { ITEM_IMG } from "../images";
+import { ITEM_IMG, GOOD_IMG } from "../images";
 
 export default function BlackMarket() {
   const { user, catalog, refresh } = useAuth();
@@ -73,17 +73,25 @@ export default function BlackMarket() {
           const price = data.prices[g.id]; const owned = data.holdings[g.id] || 0;
           const pctOfBase = Math.round((price / g.base) * 100); const hot = pctOfBase >= 120;
           return (
-            <div key={g.id} className="card-glow" data-testid={`good-${g.id}`} style={{ padding: 18, borderColor: `${g.color}44` }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                <div className="font-display" style={{ color: "#fff", fontSize: 16 }}>{g.name.toUpperCase()}</div>
-                <div className="label-caps" style={{ color: g.color, fontSize: 9 }}>/{g.unit}</div>
+            <div key={g.id} className="card-glow" data-testid={`good-${g.id}`} style={{ padding: 0, overflow: "hidden", borderColor: `${g.color}44` }}>
+              <div style={{ display: "flex", gap: 14, padding: 16 }}>
+                <div style={{ width: 74, height: 74, flexShrink: 0, border: `1px solid ${g.color}44`, overflow: "hidden", background: "#05060f", position: "relative" }}>
+                  <img src={GOOD_IMG[g.id]} alt="" loading="lazy" data-testid={`good-img-${g.id}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <div style={{ position: "absolute", inset: 0, background: `linear-gradient(180deg, transparent 45%, ${g.color}22 100%)` }} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                    <div className="font-display" style={{ color: "#fff", fontSize: 16 }}>{g.name.toUpperCase()}</div>
+                    <div className="label-caps" style={{ color: g.color, fontSize: 9 }}>/{g.unit}</div>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginTop: 6 }}>
+                    <div className="font-display" style={{ color: g.color, fontSize: 24, fontWeight: 800 }} data-testid={`price-${g.id}`}>{fmtMoney(price)}</div>
+                    <div style={{ fontSize: 11, color: hot ? "#10B981" : "#EF4444" }}>{hot ? "▲" : "▼"} {pctOfBase}%</div>
+                  </div>
+                  <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>You hold: <span className="font-display" style={{ color: "#fff" }}>{owned}</span></div>
+                </div>
               </div>
-              <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginTop: 8 }}>
-                <div className="font-display" style={{ color: g.color, fontSize: 24, fontWeight: 800 }} data-testid={`price-${g.id}`}>{fmtMoney(price)}</div>
-                <div style={{ fontSize: 11, color: hot ? "#10B981" : "#EF4444" }}>{hot ? "▲" : "▼"} {pctOfBase}%</div>
-              </div>
-              <div style={{ fontSize: 11, color: "#94a3b8", margin: "8px 0" }}>You hold: <span className="font-display" style={{ color: "#fff" }}>{owned}</span></div>
-              <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 10 }}>
+              <div style={{ display: "flex", gap: 8, alignItems: "center", padding: "0 16px 16px" }}>
                 <input data-testid={`qty-${g.id}`} type="number" min={1} value={q(g.id)} onChange={(e) => setQ(g.id, +e.target.value)} style={{ width: 70 }} />
                 <button data-testid={`buy-${g.id}`} onClick={() => buyC(g)} disabled={user.money < price * q(g.id)} className="btn-primary" style={{ padding: "8px 12px", fontSize: 11, flex: 1 }}>BUY</button>
                 <button data-testid={`sell-${g.id}`} onClick={() => sellC(g)} disabled={owned < q(g.id)} className="btn-outline" style={{ padding: "8px 12px", fontSize: 11, flex: 1, borderColor: `${g.color}66`, color: g.color }}>SELL</button>

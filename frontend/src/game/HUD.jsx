@@ -16,18 +16,27 @@ function CornerFrame({ color }) {
   );
 }
 
-function StatBlock({ Icon, iconColor, label, value, valueColor, testid }) {
+function StatBlock({ Icon, iconColor, label, value, valueColor, testid, title }) {
   return (
-    <div data-testid={testid} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 18px", background: "#08080f", border: "1px solid #14141f", minWidth: 0 }}>
-      <div style={{ width: 34, height: 34, display: "flex", alignItems: "center", justifyContent: "center", background: `${iconColor}18`, border: `1px solid ${iconColor}55` }}>
+    <div data-testid={testid} title={title} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 18px", background: "#08080f", border: "1px solid #14141f", minWidth: 0 }}>
+      <div style={{ width: 34, height: 34, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: `${iconColor}18`, border: `1px solid ${iconColor}55` }}>
         <Icon size={16} color={iconColor} style={{ filter: `drop-shadow(0 0 4px ${iconColor}aa)` }} />
       </div>
       <div style={{ minWidth: 0 }}>
         <div className="label-caps" style={{ color: iconColor, fontSize: 9, letterSpacing: "0.25em" }}>{label}</div>
-        <div className="font-display" style={{ fontSize: 18, color: valueColor, fontWeight: 800, letterSpacing: "0.02em", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{value}</div>
+        <div className="font-display" title={title} style={{ fontSize: 18, color: valueColor, fontWeight: 800, letterSpacing: "0.02em", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", cursor: title ? "help" : "default" }}>{value}</div>
       </div>
     </div>
   );
+}
+
+// Compact money for tight HUD space; full exact value shown on hover/tap via title tooltip.
+function abbrMoney(n) {
+  const v = Number(n) || 0; const a = Math.abs(v);
+  if (a >= 1e9) return `$${(v / 1e9).toFixed(2)}B`;
+  if (a >= 1e6) return `$${(v / 1e6).toFixed(2)}M`;
+  if (a >= 1e5) return `$${Math.round(v / 1e3)}K`;
+  return `$ ${v.toLocaleString()}`;
 }
 
 function IconBtn({ Icon, badge, onClick, color = "#94a3b8", testid }) {
@@ -102,9 +111,9 @@ export default function HUD({ toggleSidebar, showMenu, onSettings, onOpenSocial 
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1.4fr 0.9fr", gap: 10 }}>
-        <StatBlock testid="hud-cash" Icon={DollarSign} iconColor="#10B981" label="CASH" value={`$ ${user.money.toLocaleString()}`} valueColor="#10B981" />
-        <StatBlock testid="hud-bank" Icon={Landmark} iconColor="#38BDF8" label="BANK" value={`$ ${(user.bank || 0).toLocaleString()}`} valueColor="#38BDF8" />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(140px,1fr))", gap: 10 }}>
+        <StatBlock testid="hud-cash" Icon={DollarSign} iconColor="#10B981" label="CASH" value={abbrMoney(user.money)} title={`$${(user.money || 0).toLocaleString()}`} valueColor="#10B981" />
+        <StatBlock testid="hud-bank" Icon={Landmark} iconColor="#38BDF8" label="BANK" value={abbrMoney(user.bank || 0)} title={`$${(user.bank || 0).toLocaleString()}`} valueColor="#38BDF8" />
         <div data-testid="hud-heat" style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 18px", background: "#08080f", border: "1px solid #14141f", minWidth: 0 }}>
           <div style={{ width: 34, height: 34, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.4)" }}>
             <Flame size={16} color="#EF4444" style={{ filter: "drop-shadow(0 0 4px #EF4444aa)" }} />

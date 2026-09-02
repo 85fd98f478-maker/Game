@@ -199,8 +199,16 @@ export const ITEM_IMG_BY_ID = {
   food_noodles: ITEM_IMG.food_cheap, food_burger: ITEM_IMG.food_mid, food_sushi: ITEM_IMG.food_expensive,
   drink_soda: ITEM_IMG.drink_cheap, drink_sports: ITEM_IMG.drink_mid, drink_elixir: ITEM_IMG.drink_expensive,
   med_stim: ITEM_IMG.medicine_basic, med_nano: ITEM_IMG.medicine_advanced,
-  bm_combat_stim: ITEM_IMG.medicine_basic, bm_crate: ITEM_IMG.contraband_crate,
+  bm_combat_stim: ITEM_IMG.medicine_basic, bm_crate: ITEM_IMG.contraband_crate, crate_mystery: ITEM_IMG.contraband_crate,
   crate_tobacco: ITEM_IMG.crate_tobacco, crate_weed: ITEM_IMG.crate_weed, crate_alcohol: ITEM_IMG.crate_alcohol,
   crate_counterfeit: ITEM_IMG.crate_counterfeit, crate_cocaine: ITEM_IMG.crate_cocaine,
   drone_recon: ITEM_IMG.drone_recon, drone_combat: ITEM_IMG.drone_combat, drone_tech: ITEM_IMG.drone_tech,
+};
+// Contraband good artwork keyed by good id (Street Prices · Live)
+export const GOOD_IMG = {
+  tobacco: ITEM_IMG.crate_tobacco,
+  weed: ITEM_IMG.crate_weed,
+  alcohol: ITEM_IMG.crate_alcohol,
+  counterfeit: ITEM_IMG.crate_counterfeit,
+  cocaine: ITEM_IMG.crate_cocaine,
 };

@@ -21,9 +21,19 @@ export default function Heists({ setTab }) {
   const [chance, setChance] = useState(null);
   const [friends, setFriends] = useState([]);
   const [accepted, setAccepted] = useState([]);
+  const [decision, setDecision] = useState(null);
+  const [tEnd, setTEnd] = useState(0);
+  const [deciding, setDeciding] = useState(false);
 
   useEffect(() => { (async () => { try { const { data } = await api.get("/heist/history"); setHistory(data); } catch {} })(); }, []);
   useEffect(() => { (async () => { try { const { data } = await api.get("/friends"); setFriends(data.friends || []); } catch {} })(); }, []);
+  useEffect(() => {
+    if (window.__openHeist && catalog) {
+      const h = catalog.heists.find((x) => x.id === window.__openHeist);
+      window.__openHeist = undefined;
+      if (h && user.level >= h.min_level) { setSelected(h); setCrewSel([]); setDroneSel(null); setPlayerSel([]); setAccepted([]); setVehSel(user.equipped.vehicle || "starter"); loadAccepted(h.id); }
+    }
+  }, [catalog]); // eslint-disable-line
 
   const loadAccepted = useCallback(async (hid) => { try { const { data } = await api.get(`/heist/accepted-crew/${hid}`); setAccepted(data); } catch {} }, []);
 
@@ -56,21 +66,37 @@ export default function Heists({ setTab }) {
 
   const start = async () => {
     if (!selected) return;
-    setRunning(true); setEvents([]); setOutcome(null);
+    setRunning(true); setEvents([]); setOutcome(null); setDecision(null); setDeciding(false);
     try {
+      // Phase 1 — briefing/approach + interactive decision (no state change)
       const { data } = await api.post("/heist/run", { heist_id: selected.id, crew_ids: crewSel, vehicle_id: vehSel, drone_id: droneSel, player_ids: playerSel });
-      for (let i = 0; i < data.events.length; i++) { await new Promise((r) => setTimeout(r, 500)); setEvents((prev) => [...prev, data.events[i]]); }
+      for (let i = 0; i < data.events.length; i++) { await new Promise((r) => setTimeout(r, 480)); setEvents((prev) => [...prev, data.events[i]]); }
+      await new Promise((r) => setTimeout(r, 300));
+      setTEnd(data.t_end || 0);
+      setDecision(data.decision || null);
+    } catch (e) { toast.error(fmtDetail(e.response?.data?.detail)); setRunning(false); }
+  };
+
+  const chooseOption = async (key) => {
+    if (!selected) return;
+    setDecision(null); setDeciding(true);
+    try {
+      // Phase 2 — resolve with the chosen decision
+      const { data } = await api.post("/heist/run", { heist_id: selected.id, crew_ids: crewSel, vehicle_id: vehSel, drone_id: droneSel, player_ids: playerSel, choice: key, t0: tEnd });
+      for (let i = 0; i < data.events.length; i++) { await new Promise((r) => setTimeout(r, 480)); setEvents((prev) => [...prev, data.events[i]]); }
       await new Promise((r) => setTimeout(r, 300));
       setOutcome(data);
+      setDeciding(false);
       await refresh();
       const { data: h } = await api.get("/heist/history"); setHistory(h);
       if (data.captured) toast.error("You were ARRESTED! Go to the Prison tab to pay bail.");
       if (data.drone_lost) toast.error("Drone destroyed — permanently lost.");
-    } catch (e) { toast.error(fmtDetail(e.response?.data?.detail)); setRunning(false); }
+    } catch (e) { toast.error(fmtDetail(e.response?.data?.detail)); setDeciding(false); }
   };
 
-  const closeOutcome = () => { setRunning(false); setOutcome(null); setEvents([]); setSelected(null); };
+  const closeOutcome = () => { setRunning(false); setOutcome(null); setEvents([]); setSelected(null); setDecision(null); setDeciding(false); };
   const outcomeClass = { "PERFECT SUCCESS": "outcome-perfect", "SUCCESS": "outcome-success", "PARTIAL SUCCESS": "outcome-partial", "FAILED": "outcome-failed", "DISASTER": "outcome-disaster" };
+  const outcomeLabel = { "PERFECT SUCCESS": "SUCCESS", "SUCCESS": "SUCCESS", "PARTIAL SUCCESS": "PARTIAL SUCCESS", "FAILED": "FAILED", "DISASTER": "FAILED" };
   const pct = chance ? Math.round(chance.success_chance * 100) : null;
 
   return (
@@ -111,7 +137,7 @@ export default function Heists({ setTab }) {
               {history.slice(0, 10).map((o) => (
                 <div key={o.id} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid #1a2436", fontSize: 12 }}>
                   <span style={{ color: "#fff" }}>{o.heist_name}</span>
-                  <span className={outcomeClass[o.outcome]} style={{ fontFamily: "Orbitron", fontSize: 10 }}>{o.outcome}</span>
+                  <span className={outcomeClass[o.outcome]} style={{ fontFamily: "Orbitron", fontSize: 10 }}>{outcomeLabel[o.outcome] || o.outcome}</span>
                   <span className="font-display neon-gold">{fmtMoney(o.cash)}</span>
                 </div>
               ))}
@@ -124,6 +150,19 @@ export default function Heists({ setTab }) {
         <div className="label-caps neon-cyan">PREPARE OPERATION</div>
         <h2 className="font-display" style={{ fontSize: 28, color: "#fff" }}>{selected.name.toUpperCase()}</h2>
         <div style={{ color: "#94a3b8", fontSize: 13, marginBottom: 16 }}>Reward: <span className="neon-gold">{fmtMoney(selected.reward_min)} – {fmtMoney(selected.reward_max)}</span> · Difficulty {selected.difficulty}/10 · Heat +{selected.heat_gain}</div>
+
+        {/* MISSION BRIEFING */}
+        <div data-testid="mission-briefing" style={{ border: "1px solid rgba(0,240,255,0.25)", background: "rgba(0,240,255,0.03)", padding: 16, marginBottom: 20 }}>
+          <div className="label-caps neon-cyan" style={{ marginBottom: 10 }}>MISSION BRIEFING</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 12 }}>
+            <div><div className="label-caps" style={{ fontSize: 9 }}>OBJECTIVE</div><div style={{ color: "#fff", fontSize: 13, marginTop: 2 }}>{selected.name}</div></div>
+            <div><div className="label-caps" style={{ fontSize: 9 }}>LOCATION</div><div style={{ color: "#fff", fontSize: 13, marginTop: 2 }}>{selected.district.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}</div></div>
+            <div><div className="label-caps" style={{ fontSize: 9 }}>APPROACH</div><div style={{ color: "#fff", fontSize: 13, marginTop: 2, textTransform: "capitalize" }}>{selected.type}</div></div>
+            <div><div className="label-caps" style={{ fontSize: 9 }}>GETAWAY</div><div style={{ color: "#fff", fontSize: 13, marginTop: 2 }}>{vehMeta ? vehMeta.name : "—"}</div></div>
+            <div><div className="label-caps" style={{ fontSize: 9 }}>DRONE</div><div style={{ color: droneSel ? "#00F0FF" : "#64748B", fontSize: 13, marginTop: 2 }}>{droneSel ? (ownedDrones.find((d) => d.id === droneSel)?.name || "Drone") : "None"}</div></div>
+            <div><div className="label-caps" style={{ fontSize: 9 }}>STAMINA COST</div><div style={{ color: user.stamina >= selected.stamina_cost ? "#38BDF8" : "#EF4444", fontSize: 13, marginTop: 2 }}>{selected.stamina_cost} <span style={{ color: "#64748B", fontSize: 11 }}>/ {user.stamina}</span></div></div>
+          </div>
+        </div>
 
         {/* live status bar */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(120px,1fr))", gap: 10, marginBottom: 20 }}>
@@ -195,15 +234,45 @@ export default function Heists({ setTab }) {
         <div style={{ maxHeight: 360, overflowY: "auto", padding: 16, background: "#04050a", border: "1px solid #1a2436", fontSize: 13, display: "grid", gap: 6 }}>
           {events.map((e, i) => <div key={i} className={`ticker-line event-${e.cat || "info"}`}><span style={{ color: "#64748B", fontFamily: "Orbitron", fontSize: 11 }}>{e.time}</span> · {e.msg}</div>)}
           {events.length === 0 && <div style={{ color: "#64748B" }}>Initializing operation...</div>}
+          {deciding && <div style={{ color: "#F59E0B" }} data-testid="resolving">Committing to your call…</div>}
         </div>
+
+        {/* INTERACTIVE DECISION */}
+        {decision && !outcome && <div data-testid="heist-decision" style={{ marginTop: 20, padding: 20, border: "1px solid rgba(245,158,11,0.5)", background: "rgba(245,158,11,0.05)" }}>
+          <div className="label-caps" style={{ color: "#F59E0B", marginBottom: 8 }}>⚡ SPLIT-SECOND DECISION</div>
+          <div style={{ color: "#fff", fontSize: 14, marginBottom: 16 }}>{decision.prompt}</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 12 }}>
+            {decision.options.map((o) => (
+              <button key={o.key} data-testid={`decision-${o.key}`} onClick={() => chooseOption(o.key)} style={{ padding: 14, border: "1px solid #1a2436", background: "rgba(0,0,0,0.3)", textAlign: "left", cursor: "pointer" }} className="decision-btn">
+                <div className="font-display" style={{ color: "#fff", fontSize: 13, marginBottom: 4 }}>{o.label}</div>
+                <div style={{ color: "#94a3b8", fontSize: 11 }}>{o.hint}</div>
+              </button>
+            ))}
+          </div>
+        </div>}
+
         {outcome && <div style={{ marginTop: 20, padding: 24, border: `2px solid ${outcome.outcome.includes("PERFECT") ? "#F59E0B" : outcome.outcome === "SUCCESS" ? "#10B981" : outcome.outcome === "PARTIAL SUCCESS" ? "#38BDF8" : "#EF4444"}` }} data-testid="operation-outcome">
-          <div className={`font-display ${outcomeClass[outcome.outcome]}`} style={{ fontSize: 30, fontWeight: 900, letterSpacing: "0.15em", textAlign: "center" }}>{outcome.outcome}</div>
+          <div className={`font-display ${outcomeClass[outcome.outcome]}`} style={{ fontSize: 30, fontWeight: 900, letterSpacing: "0.15em", textAlign: "center" }}>{outcomeLabel[outcome.outcome] || outcome.outcome}</div>
+          {outcome.rewards?.daily_bonus && <div data-testid="daily-bonus-badge" style={{ textAlign: "center", color: "#F59E0B", fontSize: 12, marginTop: 6 }}>◆ DAILY CONTRACT COMPLETED — +30% cash bonus applied</div>}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(110px,1fr))", gap: 14, marginTop: 20 }}>
             <div><div className="label-caps">Cash</div><div className="font-display neon-gold" style={{ fontSize: 20 }}>+{fmtMoney(outcome.rewards.cash)}</div></div>
             <div><div className="label-caps">XP</div><div className="font-display neon-cyan" style={{ fontSize: 20 }}>+{outcome.rewards.xp}</div></div>
             <div><div className="label-caps">Heat</div><div className="font-display neon-red" style={{ fontSize: 20 }}>+{outcome.rewards.heat}</div></div>
             <div><div className="label-caps">HP Loss</div><div className="font-display" style={{ fontSize: 20, color: "#EF4444" }}>-{outcome.rewards.hp_loss}</div></div>
           </div>
+          {/* SHARED LOOT LOG — real players only */}
+          {outcome.loot_log && outcome.loot_log.length > 1 && <div style={{ marginTop: 18 }} data-testid="loot-log">
+            <div className="label-caps neon-purple" style={{ marginBottom: 8 }}>SHARED LOOT LOG · POT {fmtMoney(outcome.pot || 0)}</div>
+            <div style={{ display: "grid", gap: 6 }}>
+              {outcome.loot_log.map((p, i) => (
+                <div key={i} data-testid={`loot-${p.username}`} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", border: `1px solid ${p.you ? "rgba(0,240,255,0.4)" : "#1a2436"}`, background: p.you ? "rgba(0,240,255,0.05)" : "transparent" }}>
+                  <span style={{ color: "#fff", fontSize: 13 }}>{p.username} {p.you && <span style={{ color: "#00F0FF", fontSize: 10 }}>· YOU</span>} <span className="label-caps" style={{ color: "#64748B", fontSize: 9 }}>{p.role}</span></span>
+                  <span className="font-display neon-gold" style={{ fontSize: 15 }}>+{fmtMoney(p.share)}</span>
+                </div>
+              ))}
+              {outcome.rewards.npc_count > 0 && <div style={{ color: "#64748B", fontSize: 11, marginTop: 2 }}>{outcome.rewards.npc_count} NPC crew worked for a flat fee — no cut of the pot.</div>}
+            </div>
+          </div>}
           {outcome.drone_lost && <div style={{ marginTop: 14, padding: 12, border: "1px solid #EF4444", color: "#EF4444", fontSize: 12 }} data-testid="drone-lost-msg">🛰 DRONE CONTACT LOST — Something shot down your drone. <b>Destroyed. Returned to Inventory: No.</b></div>}
           {outcome.captured && <div style={{ marginTop: 14, padding: 12, border: "1px solid #EF4444", color: "#EF4444", fontSize: 12 }} data-testid="captured-msg">🚔 ARRESTED — {outcome.prison?.reason}. Go to the Prison tab to pay bail (${outcome.prison?.bail}).</div>}
           <button data-testid="close-outcome" onClick={() => { closeOutcome(); if (outcome.captured && setTab) setTab("prison"); }} className="btn-primary" style={{ marginTop: 20, width: "100%", padding: 12 }}>CONTINUE</button>

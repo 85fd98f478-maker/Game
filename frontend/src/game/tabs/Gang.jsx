@@ -46,7 +46,14 @@ export default function Gang() {
   if (!gang) {
     return (
       <div style={{ display: "grid", gap: 20 }} data-testid="gang-tab">
-        <div><h2 className="font-display" style={{ fontSize: 24, color: "#fff", letterSpacing: "0.1em" }}>GANG</h2><div style={{ color: "#64748B", fontSize: 13 }}>Form a crew of real players. Rank up from Ghost to Hitman, GridMaster and Neon King.</div></div>
+        <div style={{ position: "relative", overflow: "hidden", height: 150, border: "1px solid rgba(168,85,247,0.35)" }} data-testid="gang-banner-empty">
+          <img src="/dashboard/bg_gang.png" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.5 }} />
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(2,2,4,0.92) 0%, rgba(2,2,4,0.3) 100%)" }} />
+          <div style={{ position: "relative", padding: 24 }}>
+            <h2 className="font-display" style={{ fontSize: 28, color: "#fff", letterSpacing: "0.1em", fontWeight: 900 }}>GANG</h2>
+            <div style={{ color: "#cbd5e1", fontSize: 13, maxWidth: 560 }}>Form a crew of real players. Rank up from Ghost to Hitman, GridMaster and Neon King.</div>
+          </div>
+        </div>
         {invites.length > 0 && <div className="card-glow" style={{ padding: 18 }}>
           <div className="label-caps neon-cyan" style={{ marginBottom: 10 }}>GANG INVITES</div>
           {invites.map((inv) => <div key={inv.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: 10, border: "1px solid #1a2436", marginBottom: 6 }}>
@@ -123,6 +130,7 @@ export default function Gang() {
           </select>
           <button data-testid="gang-deposit" onClick={deposit} disabled={!depItem} className="btn-primary" style={{ padding: "10px 16px", fontSize: 11 }}>DEPOSIT</button>
         </div>
+        {myInvOptions.length === 0 && <div style={{ color: "#64748B", fontSize: 12, marginBottom: 10 }}>You have no depositable items yet. Buy consumables, crates or drones in the Market / Black Market first, then deposit them here.</div>}
         {Object.entries(gang.inventory || {}).filter(([, q]) => q > 0).length === 0 ? <div style={{ color: "#64748B", fontSize: 13 }}>Gang stash is empty.</div> :
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(130px,1fr))", gap: 10 }}>
             {Object.entries(gang.inventory).filter(([, q]) => q > 0).map(([id, q]) => (

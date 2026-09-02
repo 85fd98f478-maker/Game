@@ -16,6 +16,7 @@ import Businesses from "../game/tabs/Businesses";
 import PvP from "../game/tabs/PvP";
 import Market from "../game/tabs/Market";
 import BlackMarket from "../game/tabs/BlackMarket";
+import Casino from "../game/tabs/Casino";
 import Gang from "../game/tabs/Gang";
 import Prison from "../game/tabs/Prison";
 import Social from "../game/tabs/Social";
@@ -56,7 +57,7 @@ export default function Game() {
 
   if (!user) return null;
 
-  const Tab = { home: Home, character: Character, inventory: Inventory, arsenal: Arsenal, garage: Garage, crew: Crew, heists: Heists, map: MapView, progress: Progress, assets: Assets, businesses: Businesses, pvp: PvP, market: Market, blackmarket: BlackMarket, gang: Gang, prison: Prison, social: Social }[tab] || Home;
+  const Tab = { home: Home, character: Character, inventory: Inventory, arsenal: Arsenal, garage: Garage, crew: Crew, heists: Heists, map: MapView, progress: Progress, assets: Assets, businesses: Businesses, pvp: PvP, market: Market, blackmarket: BlackMarket, casino: Casino, gang: Gang, prison: Prison, social: Social }[tab] || Home;
 
   const customBg = user.custom_bgs?.[tab];
   const bgUrl = customBg && customBg.startsWith("/") ? process.env.REACT_APP_BACKEND_URL + customBg : customBg;

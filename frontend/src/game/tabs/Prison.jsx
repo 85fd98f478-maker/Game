@@ -25,7 +25,14 @@ export default function Prison() {
   if (!status.in_prison) {
     return (
       <div style={{ display: "grid", gap: 20 }} data-testid="prison-tab">
-        <div><h2 className="font-display" style={{ fontSize: 24, color: "#fff", letterSpacing: "0.1em" }}>PRISON</h2><div style={{ color: "#64748B", fontSize: 13 }}>You are a free operator. Stay sharp — a botched heist can land you here.</div></div>
+        <div style={{ position: "relative", overflow: "hidden", height: 150, border: "1px solid rgba(239,68,68,0.35)" }} data-testid="prison-banner">
+          <img src="/dashboard/bg_prison.png" alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.45 }} />
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(2,2,4,0.92) 0%, rgba(2,2,4,0.35) 100%)" }} />
+          <div style={{ position: "relative", padding: 24 }}>
+            <h2 className="font-display" style={{ fontSize: 28, color: "#fff", letterSpacing: "0.1em", fontWeight: 900 }}>PRISON</h2>
+            <div style={{ color: "#cbd5e1", fontSize: 13, maxWidth: 560 }}>You are a free operator. Stay sharp — a botched heist can land you behind these bars.</div>
+          </div>
+        </div>
         <div className="card-glow" style={{ padding: 40, textAlign: "center", color: "#10B981" }}><div className="font-display" style={{ fontSize: 22 }}>NOT INCARCERATED</div><div style={{ color: "#64748B", fontSize: 12, marginTop: 6 }}>All heists available (respecting individual cooldowns).</div></div>
       </div>
     );

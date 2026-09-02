@@ -65,6 +65,42 @@ WEAPONS = [
     {"id": "smartsmg", "name": "Smart SMG", "cat": "special", "slot": "primary", "damage": 95, "accuracy": 98, "reliability": 82, "price": 98000, "ammo_type": "special"},
 ]
 
+# Per-weapon combat flavor. Guns may use {h} (hostile) and {n} (rounds). Melee uses {h} only.
+WEAPON_FLAVOR = {
+    # MELEE
+    "knife": ["You slip behind {h} and drag the blade across.", "A quick knife thrust drops {h} without a sound.", "You bury the tactical knife in {h} and lower them quietly."],
+    "bat": ["You swing the bat and {h} crumples.", "One brutal home-run swing and {h} is down.", "The bat cracks across {h}'s skull — lights out."],
+    "katana": ["A single clean katana stroke fells {h}.", "You draw the katana and {h} drops in two heartbeats.", "Steel flashes — {h} never even cleared their weapon."],
+    # PISTOLS
+    "glock17": ["Two Glock rounds and {h} folds — {n} spent.", "You double-tap {h} with the Glock 17.", "The Glock barks {n} times and {h} goes down."],
+    "beretta": ["The Beretta cracks twice and {h} drops — {n} rounds.", "You put {h} down with a clean M9 pairing.", "Beretta up, {h} down — {n} spent."],
+    "tec9": ["You spray the TEC-9 and {h} scatters, then falls — {n} rounds gone.", "The TEC-9 chatters wildly; {h} still catches enough.", "Wild TEC-9 burst, {h} down — {n} spent."],
+    # SMG
+    "ump45": ["A tight UMP-45 burst stitches {h} — {n} rounds.", "You rake {h} with the UMP-45.", "The UMP thumps {n} rounds into {h}."],
+    "mp5": ["Controlled MP5 burst — {h} drops clean, {n} spent.", "You tap {h} with a precise MP5 salvo.", "The MP5 whispers {n} rounds and {h} folds."],
+    "p90": ["The P90 shreds {h} in a heartbeat — {n} rounds.", "You hose {h} with the P90's high cyclic.", "P90 rips {n} rounds through {h}."],
+    # RIFLE
+    "ak47": ["The AK-47 roars and {h} is thrown back — {n} spent.", "You hammer {h} with the AK's heavy punch.", "Three AK rounds and {h} is finished — {n} gone."],
+    "m4a1": ["A precise M4A1 burst drops {h} — {n} rounds.", "You put {h} down with clean M4 fire.", "The M4A1 snaps {n} rounds into {h}."],
+    "scarl": ["The SCAR-L punches through {h}'s cover — {n} spent.", "You drill {h} with the SCAR-L.", "SCAR-L barks {n} times; {h} is done."],
+    # SHOTGUN
+    "mossberg": ["The Mossberg roars and {h} is gone — {n} shell(s).", "One pump, one shell, {h} down.", "You rack the Mossberg and blast {h} off their feet."],
+    "spas12": ["The SPAS-12 thunders and {h} folds — {n} shell(s).", "You blow {h} back with the SPAS-12.", "SPAS-12 boom — {h} doesn't get up."],
+    "aa12": ["The AA-12 auto-shotgun saws {h} apart — {n} shell(s).", "You dump the AA-12 and {h} is shredded.", "AA-12 thunders {n} shells; {h} is gone."],
+    # SNIPER
+    "awm": ["One AWM round from the dark and {h} drops.", "The AWM cracks — {h} is down before the echo, {n} round.", "You exhale, squeeze, and the AWM erases {h}."],
+    "m24": ["A single M24 shot puts {h} down for good.", "The M24 barks once; {h} folds — {n} round.", "You place one clean M24 round through {h}."],
+    "dragunov": ["The Dragunov cracks and {h} drops mid-stride.", "One marksman round from the Dragunov ends {h}.", "You track {h} and the Dragunov finishes it — {n} round."],
+    # SPECIAL
+    "railgun": ["The railgun screams and {h} is simply gone.", "A magnetic slug punches clean through {h}.", "The railgun discharges — {h} vaporized, {n} cell."],
+    "plasma": ["A plasma bolt melts through {h}.", "The plasma rifle hisses and {h} is scorched down.", "Superheated plasma drops {h} — {n} cell."],
+    "smartsmg": ["The Smart SMG auto-locks and {h} drops — {n} rounds.", "Guided rounds curve into {h}; no missing.", "The Smart SMG tags {h} with surgical bursts — {n} spent."],
+}
+FALLBACK_GUN = ["You shoot {h} down — {n} rounds spent.", "You drop {h} with a tight burst.", "You put {h} down, {n} rounds gone."]
+FALLBACK_MELEE = ["You strike {h} down in close quarters.", "You take {h} down with a brutal blow.", "You drop {h} up close."]
+FALLBACK_UNARMED = ["You overpower {h} bare-handed.", "You wrestle {h} to the ground and choke them out."]
+OUT_OF_AMMO = ["Out of ammo — you pistol-whip {h} down.", "Empty mag — you club {h} with the stock.", "No rounds left; you take {h} down hand-to-hand."]
+
 ARMORS = [
     {"id": "light_armor", "name": "Light Armor", "damage_reduction": 15, "price": 2400, "slot": "armor"},
     {"id": "med_armor", "name": "Tactical Vest", "damage_reduction": 30, "price": 9500, "slot": "armor"},
@@ -101,17 +137,17 @@ NPCS = [
 ]
 
 HEISTS = [
-    {"id": "op_convenience", "name": "Convenience Store", "type": "quick", "district": "downtown", "min_level": 1, "min_crew": 0, "difficulty": 1, "reward_min": 280, "reward_max": 620, "heat_gain": 5, "duration": 10},
-    {"id": "op_atm", "name": "ATM Grab", "type": "quick", "district": "downtown", "min_level": 1, "min_crew": 0, "difficulty": 1, "reward_min": 320, "reward_max": 720, "heat_gain": 4, "duration": 8},
-    {"id": "op_gasstation", "name": "Gas Station Robbery", "type": "quick", "district": "old_town", "min_level": 2, "min_crew": 0, "difficulty": 2, "reward_min": 480, "reward_max": 950, "heat_gain": 6, "duration": 12},
-    {"id": "op_street_drug", "name": "Street Drug Deal", "type": "street", "district": "north_side", "min_level": 3, "min_crew": 1, "difficulty": 3, "reward_min": 850, "reward_max": 1850, "heat_gain": 10, "duration": 14},
-    {"id": "op_jewelry", "name": "Jewelry Store", "type": "street", "district": "upper_east", "min_level": 5, "min_crew": 1, "difficulty": 4, "reward_min": 1450, "reward_max": 2800, "heat_gain": 15, "duration": 16},
-    {"id": "op_warehouse", "name": "Warehouse Raid", "type": "street", "district": "industrial", "min_level": 7, "min_crew": 2, "difficulty": 5, "reward_min": 1950, "reward_max": 3400, "heat_gain": 18, "duration": 20},
-    {"id": "op_armored", "name": "Armored Transport", "type": "heist", "district": "docks", "min_level": 10, "min_crew": 2, "difficulty": 6, "reward_min": 3400, "reward_max": 5800, "heat_gain": 25, "duration": 24},
-    {"id": "op_casino", "name": "Casino Vault", "type": "heist", "district": "upper_east", "min_level": 15, "min_crew": 3, "difficulty": 7, "reward_min": 5500, "reward_max": 9500, "heat_gain": 30, "duration": 30},
-    {"id": "op_bank", "name": "Downtown Bank", "type": "heist", "district": "downtown", "min_level": 20, "min_crew": 3, "difficulty": 8, "reward_min": 8500, "reward_max": 15000, "heat_gain": 40, "duration": 35},
-    {"id": "op_datacenter", "name": "Corp Data Center", "type": "major", "district": "black_island", "min_level": 25, "min_crew": 4, "difficulty": 9, "reward_min": 13000, "reward_max": 21000, "heat_gain": 45, "duration": 40},
-    {"id": "op_penthouse", "name": "Kingpin's Penthouse", "type": "major", "district": "black_island", "min_level": 30, "min_crew": 4, "difficulty": 10, "reward_min": 19000, "reward_max": 34000, "heat_gain": 55, "duration": 50},
+    {"id": "op_convenience", "name": "Convenience Store", "type": "quick", "district": "downtown", "min_level": 1, "min_crew": 0, "difficulty": 1, "reward_min": 280, "reward_max": 620, "heat_gain": 5, "duration": 10, "cooldown": 120},
+    {"id": "op_atm", "name": "ATM Grab", "type": "quick", "district": "downtown", "min_level": 1, "min_crew": 0, "difficulty": 1, "reward_min": 320, "reward_max": 720, "heat_gain": 4, "duration": 8, "cooldown": 150},
+    {"id": "op_gasstation", "name": "Gas Station Robbery", "type": "quick", "district": "old_town", "min_level": 2, "min_crew": 0, "difficulty": 2, "reward_min": 480, "reward_max": 950, "heat_gain": 6, "duration": 12, "cooldown": 240},
+    {"id": "op_street_drug", "name": "Street Drug Deal", "type": "street", "district": "north_side", "min_level": 3, "min_crew": 1, "difficulty": 3, "reward_min": 850, "reward_max": 1850, "heat_gain": 10, "duration": 14, "cooldown": 420},
+    {"id": "op_jewelry", "name": "Jewelry Store", "type": "street", "district": "upper_east", "min_level": 5, "min_crew": 1, "difficulty": 4, "reward_min": 1450, "reward_max": 2800, "heat_gain": 15, "duration": 16, "cooldown": 600},
+    {"id": "op_warehouse", "name": "Warehouse Raid", "type": "street", "district": "industrial", "min_level": 7, "min_crew": 2, "difficulty": 5, "reward_min": 1950, "reward_max": 3400, "heat_gain": 18, "duration": 20, "cooldown": 900},
+    {"id": "op_armored", "name": "Armored Transport", "type": "heist", "district": "docks", "min_level": 10, "min_crew": 2, "difficulty": 6, "reward_min": 3400, "reward_max": 5800, "heat_gain": 25, "duration": 24, "cooldown": 1500},
+    {"id": "op_casino", "name": "Casino Vault", "type": "heist", "district": "upper_east", "min_level": 15, "min_crew": 3, "difficulty": 7, "reward_min": 5500, "reward_max": 9500, "heat_gain": 30, "duration": 30, "cooldown": 2400},
+    {"id": "op_bank", "name": "Downtown Bank", "type": "heist", "district": "downtown", "min_level": 20, "min_crew": 3, "difficulty": 8, "reward_min": 8500, "reward_max": 15000, "heat_gain": 40, "duration": 35, "cooldown": 3600},
+    {"id": "op_datacenter", "name": "Corp Data Center", "type": "major", "district": "black_island", "min_level": 25, "min_crew": 4, "difficulty": 9, "reward_min": 13000, "reward_max": 21000, "heat_gain": 45, "duration": 40, "cooldown": 5400},
+    {"id": "op_penthouse", "name": "Kingpin's Penthouse", "type": "major", "district": "black_island", "min_level": 30, "min_crew": 4, "difficulty": 10, "reward_min": 19000, "reward_max": 34000, "heat_gain": 55, "duration": 50, "cooldown": 7200},
 ]
 
 DISTRICTS = [
@@ -162,11 +198,7 @@ MEDICINE_ITEMS = [
 # Black Market consumables + special goods (illegal, cash only)
 BLACKMARKET_ITEMS = [
     {"id": "bm_combat_stim", "name": "Combat Stim", "type": "bm_medicine", "price": 950, "health": 70, "stamina": 25, "img": "medicine_basic", "legal": False, "desc": "Black-market cocktail. Instant heal + stamina."},
-    {"id": "crate_tobacco", "name": "Tobacco Crate", "type": "crate", "good": "tobacco", "units": 40, "price": 1000, "img": "crate_tobacco", "legal": False, "desc": "Sealed crate of bootleg tobacco. Crack it open for cartons."},
-    {"id": "crate_weed", "name": "Weed Crate", "type": "crate", "good": "weed", "units": 25, "price": 1150, "img": "crate_weed", "legal": False, "desc": "Sealed crate of weed. Crack it open for product."},
-    {"id": "crate_alcohol", "name": "Moonshine Crate", "type": "crate", "good": "alcohol", "units": 18, "price": 1300, "img": "crate_alcohol", "legal": False, "desc": "Sealed crate of moonshine. Crack it open for crates of liquor."},
-    {"id": "crate_counterfeit", "name": "Counterfeit Crate", "type": "crate", "good": "counterfeit", "units": 5, "price": 1600, "img": "crate_counterfeit", "legal": False, "desc": "Sealed crate of forged cash. Crack it open for stacks."},
-    {"id": "crate_cocaine", "name": "Cocaine Crate", "type": "crate", "good": "cocaine", "units": 2, "price": 1900, "img": "crate_cocaine", "legal": False, "desc": "Sealed crate of cocaine. Crack it open — value varies."},
+    {"id": "crate_mystery", "name": "Mystery Contraband Crate", "type": "crate", "price": 1500, "img": "contraband_crate", "legal": False, "desc": "A sealed, unmarked crate. Could be near worthless — or a jackpot. Open it and gamble on what's inside."},
 ]
 DRONES = [
     {"id": "drone_recon", "name": "Recon Drone", "type": "drone", "price": 8000, "focus": "stealth", "img": "drone_recon", "legal": False, "tier": 1,
@@ -338,6 +370,45 @@ def check_level_up(user: dict) -> dict:
         user["level"] += 1
     return user
 
+# Centralized XP grant. Heists give high XP directly; everything else routes here for
+# small, exploit-resistant gains. `spend`/`wager` based sources scale with real money moved
+# (finite resource) so spamming cheap actions yields ~0 XP.
+def grant_xp(user: dict, amount: int):
+    amt = max(0, int(amount))
+    if amt <= 0:
+        return user
+    user["xp"] = user.get("xp", 0) + amt
+    return check_level_up(user)
+
+# XP tuning (small vs heists). Purchases/casino scale with money moved; capped per action.
+XP_RULES = {
+    "purchase_per_1k": 1,      # 1 XP per $1,000 spent on gear/items
+    "purchase_cap": 60,        # max XP from a single purchase
+    "purchase_min_spend": 1000,# below this spend, no XP (blocks cheap-item spam)
+    "casino_per_1k_wager": 1,  # 1 XP per $1,000 wagered
+    "casino_cap": 20,          # max XP per casino game
+    "raid_win": 45,            # medium XP for a successful raid
+    "raid_loss": 8,            # small XP for a failed raid attempt
+    "gang_assist": 10,         # bonus XP when raiding with gang allies
+}
+
+def purchase_xp(spend: int) -> int:
+    if spend < XP_RULES["purchase_min_spend"]:
+        return 0
+    return min(XP_RULES["purchase_cap"], (spend // 1000) * XP_RULES["purchase_per_1k"])
+
+def power_score(u: dict) -> float:
+    """Relative strength for PvP matchmaking. Uses progression already in the game."""
+    eq = u.get("equipped", {}) or {}
+    wid = eq.get("primary") or eq.get("secondary") or eq.get("melee")
+    w = find_item(WEAPONS, wid) if wid else None
+    wdmg = w["damage"] if w else 8
+    aid = eq.get("armor")
+    a = find_item(ARMORS, aid) if aid else None
+    ar = a["damage_reduction"] if a else 0
+    return u.get("level", 1) * 8 + wdmg + ar + u.get("reputation", 0) * 0.25
+
+
 def find_item(items: list, iid: str):
     for it in items:
         if it["id"] == iid:
@@ -442,6 +513,8 @@ class HeistIn(BaseModel):
     vehicle_id: str
     drone_id: Optional[str] = None
     player_ids: List[str] = []  # invited friends (real players) that accepted
+    choice: Optional[str] = None  # interactive decision key (None = phase 1 briefing)
+    t0: int = 0  # narrative clock offset carried from phase 1
 
 class BankIn(BaseModel):
     amount: int
@@ -450,6 +523,7 @@ class RaidIn(BaseModel):
     target_username: str
     property_id: str
     crew_ids: List[str] = []
+    ally_ids: List[str] = []
 
 class BgIn(BaseModel):
     section: str
@@ -537,17 +611,17 @@ async def create_character(data: CharacterIn, request: Request):
 @api.get("/catalog")
 async def catalog():
     vehicles = [{**v, "capacity": vehicle_capacity(v), "max_durability": vehicle_max_durability(v)} for v in VEHICLES]
-    heists = [{**h, "stamina_cost": CONFIG["heist_stamina_cost"].get(h["type"], 20), "crew_max": CONFIG["heist_crew_max"].get(h["type"], 4)} for h in HEISTS]
+    heists = [{**h, "stamina_cost": CONFIG["heist_stamina_cost"].get(h["type"], 20), "crew_max": CONFIG["heist_crew_max"].get(h["type"], 4), "cooldown": h.get("cooldown", 180)} for h in HEISTS]
     return {"specializations": SPECIALIZATIONS, "weapons": WEAPONS, "armors": ARMORS, "vehicles": vehicles, "npcs": NPCS, "heists": heists, "districts": DISTRICTS, "ammo_prices": AMMO_PRICES, "properties": PROPERTIES, "businesses": BUSINESSES,
             "food": FOOD_ITEMS, "drinks": DRINK_ITEMS, "medicine": MEDICINE_ITEMS, "blackmarket_items": BLACKMARKET_ITEMS, "drones": DRONES, "config": CONFIG}
 
 # ========== CONTRABAND BLACK MARKET ==========
 CONTRABAND = [
-    {"id": "tobacco", "name": "Bootleg Tobacco", "base": 25, "unit": "carton", "color": "#F59E0B"},
-    {"id": "weed", "name": "Weed", "base": 45, "unit": "oz", "color": "#22C55E"},
-    {"id": "alcohol", "name": "Moonshine", "base": 70, "unit": "crate", "color": "#38BDF8"},
-    {"id": "counterfeit", "name": "Counterfeit Cash", "base": 320, "unit": "stack", "color": "#A855F7"},
-    {"id": "cocaine", "name": "Cocaine", "base": 950, "unit": "kg", "color": "#EC4899"},
+    {"id": "tobacco", "name": "Bootleg Tobacco", "base": 25, "unit": "carton", "color": "#F59E0B", "img": "crate_tobacco"},
+    {"id": "weed", "name": "Weed", "base": 45, "unit": "oz", "color": "#22C55E", "img": "crate_weed"},
+    {"id": "alcohol", "name": "Moonshine", "base": 70, "unit": "crate", "color": "#38BDF8", "img": "crate_alcohol"},
+    {"id": "counterfeit", "name": "Counterfeit Cash", "base": 320, "unit": "stack", "color": "#A855F7", "img": "crate_counterfeit"},
+    {"id": "cocaine", "name": "Cocaine", "base": 950, "unit": "kg", "color": "#EC4899", "img": "crate_cocaine"},
 ]
 CONTRABAND_PERIOD = 3 * 3600  # prices refresh every 3 hours
 
@@ -639,8 +713,9 @@ async def buy_weapon(data: BuyIn, request: Request):
         weapons.append({"id": data.item_id, "qty": 1})
     new_money = user["money"] - w["price"]
     new_spent = user["stats"]["total_spent"] + w["price"]
-    await db.users.update_one({"id": user["id"]}, {"$set": {"weapons": weapons, "money": new_money, "stats.total_spent": new_spent}})
-    return {"ok": True, "money": new_money, "weapons": weapons}
+    xp = purchase_xp(w["price"]); user = grant_xp(user, xp)
+    await db.users.update_one({"id": user["id"]}, {"$set": {"weapons": weapons, "money": new_money, "stats.total_spent": new_spent, "xp": user["xp"], "level": user["level"]}})
+    return {"ok": True, "money": new_money, "weapons": weapons, "xp": xp}
 
 @api.post("/player/buy-armor")
 async def buy_armor(data: BuyIn, request: Request):
@@ -655,8 +730,9 @@ async def buy_armor(data: BuyIn, request: Request):
     if ex: ex["qty"] += 1
     else: armors.append({"id": data.item_id, "qty": 1})
     new_money = user["money"] - a["price"]
-    await db.users.update_one({"id": user["id"]}, {"$set": {"armors": armors, "money": new_money, "stats.total_spent": user["stats"]["total_spent"] + a["price"]}})
-    return {"ok": True, "money": new_money, "armors": armors}
+    xp = purchase_xp(a["price"]); user = grant_xp(user, xp)
+    await db.users.update_one({"id": user["id"]}, {"$set": {"armors": armors, "money": new_money, "stats.total_spent": user["stats"]["total_spent"] + a["price"], "xp": user["xp"], "level": user["level"]}})
+    return {"ok": True, "money": new_money, "armors": armors, "xp": xp}
 
 @api.post("/player/buy-vehicle")
 async def buy_vehicle(data: BuyIn, request: Request):
@@ -669,8 +745,9 @@ async def buy_vehicle(data: BuyIn, request: Request):
     vehicles = user["vehicles"]
     vehicles.append({"id": data.item_id, "condition": 100, "instance_id": str(uuid.uuid4())})
     new_money = user["money"] - v["price"]
-    await db.users.update_one({"id": user["id"]}, {"$set": {"vehicles": vehicles, "money": new_money, "stats.total_spent": user["stats"]["total_spent"] + v["price"]}})
-    return {"ok": True, "money": new_money, "vehicles": vehicles}
+    xp = purchase_xp(v["price"]); user = grant_xp(user, xp)
+    await db.users.update_one({"id": user["id"]}, {"$set": {"vehicles": vehicles, "money": new_money, "stats.total_spent": user["stats"]["total_spent"] + v["price"], "xp": user["xp"], "level": user["level"]}})
+    return {"ok": True, "money": new_money, "vehicles": vehicles, "xp": xp}
 
 @api.post("/player/equip")
 async def equip(data: EquipIn, request: Request):
@@ -758,161 +835,309 @@ async def hire_crew(data: HireIn, request: Request):
     return {"ok": True, "money": new_money, "hired_crew": hired}
 
 # ========== HEIST SIMULATION ==========
-def simulate_heist(user: dict, heist: dict, crew_ids: List[str], vehicle_id: str, drone_id: str = None, player_crew: list = None) -> dict:
-    """Runs a heist simulation and returns events + outcome."""
-    player_crew = player_crew or []
-    events = []
-    t = 0
-    def add(msg, cat="info"):
-        nonlocal t
-        t += random.randint(2, 8)
-        mm, ss = divmod(t, 60)
-        events.append({"time": f"{mm:02d}:{ss:02d}", "msg": msg, "cat": cat})
+DISTRICT_FLAVOR = {
+    "downtown": "the neon-drowned downtown grid",
+    "old_town": "the cracked backstreets of Old Town",
+    "north_side": "the North Side sprawl",
+    "upper_east": "the gilded Upper East district",
+    "industrial": "the rusted Industrial belt",
+    "docks": "the fog-choked Docks",
+    "black_island": "fortified Black Island",
+}
 
-    # gather player context
+# Interactive decision presented mid-run, chosen by the operation's context.
+HEIST_DECISIONS = {
+    "tech": {
+        "id": "ice",
+        "prompt": "Deep inside the network, the intrusion countermeasures start adapting faster than your intel promised. You have seconds to call it.",
+        "options": [
+            {"key": "brute", "label": "BRUTE-FORCE THE CORE", "hint": "Rip the data now — louder, faster. Bigger payout, higher risk."},
+            {"key": "spoof", "label": "SPOOF & SLIP OUT CLEAN", "hint": "Cover your tracks and extract quietly. Safer, smaller take."},
+        ],
+    },
+    "stealth": {
+        "id": "patrol",
+        "prompt": "A guard rotation shifts early and a gap cracks open in the patrol pattern. It won't last.",
+        "options": [
+            {"key": "rush", "label": "TAKE THE WHOLE SCORE NOW", "hint": "Grab everything while the gap holds. Riskier, richer."},
+            {"key": "slip", "label": "STAY GHOST — TAKE WHAT'S SAFE", "hint": "Lift only the easy reach and vanish. Safer, smaller."},
+        ],
+    },
+    "combat": {
+        "id": "front",
+        "prompt": "Security is thicker than the intel said. More bodies, more guns, and they're getting organized.",
+        "options": [
+            {"key": "hard", "label": "HIT HARD AND FAST", "hint": "Overwhelm them before they set up. Bigger, bloodier, riskier."},
+            {"key": "low", "label": "KEEP IT CONTROLLED", "hint": "Measured force, careful angles. Safer, smaller take."},
+        ],
+    },
+}
+CHOICE_AGGRO = {"brute", "rush", "hard"}
+CHOICE_SAFE = {"spoof", "slip", "low"}
+
+
+def _heist_common(user, heist, crew_ids, vehicle_id, drone_id, player_crew):
+    """Shared context gathering for both phases."""
     spec = user["specialization"]
     weapon_id = user["equipped"].get("primary") or user["equipped"].get("secondary") or user["equipped"].get("melee")
     weapon = find_item(WEAPONS, weapon_id) if weapon_id else None
-    veh = next((v for v in user["vehicles"] if v["id"] == vehicle_id), None)
     veh_data = find_item(VEHICLES, vehicle_id)
     armor_id = user["equipped"].get("armor")
     armor = find_item(ARMORS, armor_id) if armor_id else None
     crew_data = [find_item(NPCS, cid) for cid in crew_ids if find_item(NPCS, cid)]
-
-    # dynamic success chance (centralized) drives the outcome roll
-    difficulty = heist["difficulty"]
-    chance, breakdown = compute_success_chance(user, heist, crew_ids, vehicle_id, drone_id, player_crew)
-    base = chance
+    drone_meta = find_item(DRONES, drone_id) if drone_id else None
+    chance, breakdown = compute_success_chance(user, heist, crew_ids, vehicle_id, drone_id, player_crew or [])
     context = breakdown["context"]
-    # crew specs available (used for narrative events)
     specs_available = {spec} | {c["spec"] for c in crew_data}
-    roll = random.random()
+    return {
+        "spec": spec, "weapon": weapon, "veh_data": veh_data, "armor": armor,
+        "crew_data": crew_data, "drone_meta": drone_meta, "chance": chance,
+        "breakdown": breakdown, "context": context, "specs_available": specs_available,
+    }
 
-    # determine outcome tier — HARDER: fewer perfect, more partial/failed
-    if roll < base - 0.35:
+
+def heist_briefing(user, heist, crew_ids, vehicle_id, drone_id, player_crew):
+    """Phase 1: approach + entry narrative and the interactive decision. No state change."""
+    ctx = _heist_common(user, heist, crew_ids, vehicle_id, drone_id, player_crew)
+    specs = ctx["specs_available"]; context = ctx["context"]
+    veh_data = ctx["veh_data"]; drone_meta = ctx["drone_meta"]
+    heat = user.get("heat", 0)
+    events = []
+    t = [random.randint(2, 6)]
+    def add(msg, cat="info"):
+        t[0] += random.randint(2, 7)
+        mm, ss = divmod(t[0], 60)
+        events.append({"time": f"{mm:02d}:{ss:02d}", "msg": msg, "cat": cat})
+
+    district = DISTRICT_FLAVOR.get(heist["district"], "the city")
+    # --- Approach ---
+    add(f"Crew rolls out toward {district}.", "info")
+    if veh_data:
+        if veh_data.get("escape", 0) >= 75:
+            add(f"The {veh_data['name']} slides into the shadows two blocks out — engine barely a whisper.", "info")
+        elif veh_data.get("escape", 0) <= 45:
+            add(f"The {veh_data['name']} grumbles into position; not subtle, but it's what you've got.", "warn")
+        else:
+            add(f"The {veh_data['name']} eases into a blind spot near the target.", "info")
+    if heat >= 60:
+        add("Patrol density is brutal tonight — the whole grid is watching. Heat is working against you.", "bad")
+    elif heat >= 30:
+        add("Extra units are cruising the area. Stay tight.", "warn")
+    if drone_meta:
+        add(f"{drone_meta['name']} lifts off for overwatch, feeding you a live map.", "info")
+
+    # --- Entry (reacts to specialization mix vs context) ---
+    if context == "tech":
+        if "hacker" in specs:
+            add("Hacker jacks into the building's netgrid and loops the camera feeds.", "good")
+        if "technician" in specs:
+            add("Technician spikes the alarm relay before it can phone home.", "good")
+        if not (specs & {"hacker", "technician"}):
+            add("No specialist for the systems here — you're going in half-blind.", "bad")
+    elif context == "stealth":
+        if "infiltrator" in specs:
+            add("Infiltrator ghosts through the service entrance, killing motion sensors one by one.", "good")
+        if "negotiator" in specs:
+            add("Negotiator talks a night guard into looking the other way.", "good")
+        if not (specs & {"infiltrator", "negotiator"}):
+            add("No one trained for a quiet entry — every step feels loud.", "bad")
+    else:  # combat
+        if "shooter" in specs:
+            add("Shooter takes point, weapon up, clearing the entry.", "good")
+        if "driver" in specs:
+            add("Driver keeps the engine hot at the curb, eyes on every mirror.", "good")
+        if not (specs & {"shooter", "driver"}):
+            add("Crew stacks on the door with more nerve than skill.", "warn")
+    add("You're inside. Clock's running.", "info")
+
+    decision = HEIST_DECISIONS.get(context, HEIST_DECISIONS["combat"])
+    return {
+        "phase": "decision",
+        "events": events,
+        "decision": decision,
+        "success_chance": round(ctx["chance"], 3),
+        "context": context,
+        "t_end": t[0],
+    }
+
+
+def resolve_heist(user, heist, crew_ids, vehicle_id, drone_id, player_crew, choice, t0=0):
+    """Phase 2: apply the decision, roll the outcome, and generate the complication + escape."""
+    player_crew = player_crew or []
+    ctx = _heist_common(user, heist, crew_ids, vehicle_id, drone_id, player_crew)
+    specs_available = ctx["specs_available"]; context = ctx["context"]
+    weapon = ctx["weapon"]; veh_data = ctx["veh_data"]; armor = ctx["armor"]
+    crew_data = ctx["crew_data"]; drone_meta = ctx["drone_meta"]
+    difficulty = heist["difficulty"]
+    base = ctx["chance"]
+
+    events = []
+    t = [max(t0, 0) + random.randint(2, 6)]
+    def add(msg, cat="info"):
+        t[0] += random.randint(2, 8)
+        mm, ss = divmod(t[0], 60)
+        events.append({"time": f"{mm:02d}:{ss:02d}", "msg": msg, "cat": cat})
+
+    # --- Apply the interactive decision ---
+    aggro = choice in CHOICE_AGGRO
+    safe = choice in CHOICE_SAFE
+    reward_bias = 0.20 if aggro else (-0.12 if safe else 0.0)
+    capture_bias = 0.06 if aggro else (-0.05 if safe else 0.0)
+    hp_bias = 1.15 if aggro else (0.9 if safe else 1.0)
+    base_adj = base + (-0.06 if aggro else (0.07 if safe else 0.0))
+    base_adj = max(0.05, min(0.92, base_adj))
+
+    decision_lines = {
+        "brute": "You slam the core and start ripping data — every siren in the district could light up now.",
+        "spoof": "You feed the system a ghost and back out clean, taking only what's safe.",
+        "rush": "You break cover and sweep the whole score while the gap holds.",
+        "slip": "You stay a shadow, lifting only what won't be missed, and melt back.",
+        "hard": "You hit them hard and fast, no hesitation, all momentum.",
+        "low": "You keep it surgical — controlled bursts, careful angles, no wasted motion.",
+    }
+    if choice in decision_lines:
+        add(decision_lines[choice], "warn" if aggro else "info")
+
+    roll = random.random()
+    if roll < base_adj - 0.35:
         outcome = "PERFECT SUCCESS"; mult = 1.5; rep_mult = 2.0; hp_loss_pct = 0.08
-    elif roll < base - 0.15:
+    elif roll < base_adj - 0.15:
         outcome = "SUCCESS"; mult = 0.9; rep_mult = 1.0; hp_loss_pct = 0.22
-    elif roll < base + 0.10:
+    elif roll < base_adj + 0.10:
         outcome = "PARTIAL SUCCESS"; mult = 0.45; rep_mult = 0.4; hp_loss_pct = 0.45
-    elif roll < base + 0.30:
+    elif roll < base_adj + 0.30:
         outcome = "FAILED"; mult = 0.0; rep_mult = -0.15; hp_loss_pct = 0.65
     else:
         outcome = "DISASTER"; mult = 0.0; rep_mult = -0.30; hp_loss_pct = 0.95
 
-    # event generation
-    add(f"Crew mobilized. Rolling to {heist['name']}.", "info")
-    add("Vehicle en route to target.", "info")
-    add("Crew entered the location.", "info")
-
-    # security phase
-    if "hacker" in specs_available or "technician" in specs_available or "infiltrator" in specs_available:
-        add("Security system detected.", "warn")
-        if "hacker" in specs_available:
-            add("Hacker bypassed security cameras.", "good")
-        if "technician" in specs_available:
-            add("Technician cracked the vault lock.", "good")
-        if "infiltrator" in specs_available:
-            add("Infiltrator disabled the alarm silently.", "good")
-    else:
-        add("Alarm triggered — no bypass available.", "bad")
-
-    # combat phase
+    # --- Combat / complication beats (varied by context, outcome AND equipped weapon) ---
     enemies_killed = 0
     times_shot = 0
-    if outcome in ("PERFECT SUCCESS", "SUCCESS"):
+    ammo_ref = [0]
+    hostile = "a guard" if context != "combat" else "a hostile"
+    is_firearm = bool(weapon and weapon.get("ammo_type"))
+    is_melee = bool(weapon and weapon.get("cat") == "melee")
+    wid = weapon["id"] if weapon else None
+    ammo_type = weapon.get("ammo_type") if weapon else None
+    ammo_avail = user["ammo"].get(ammo_type, 0) if ammo_type else 0
+
+    def takedown():
+        """One enemy neutralised — text and ammo match the equipped weapon.
+        Ammo is only spent on real firearm actions, and never below what the player carries."""
+        if is_firearm:
+            rounds = random.randint(2, 6)
+            if ammo_ref[0] + rounds <= ammo_avail:
+                ammo_ref[0] += rounds
+                add(random.choice(WEAPON_FLAVOR.get(wid) or FALLBACK_GUN).format(h=hostile, n=rounds), "combat")
+            else:
+                # firearm ran dry mid-fight — improvise, no ammo consumed
+                add(random.choice(OUT_OF_AMMO).format(h=hostile), "combat")
+        elif is_melee:
+            add(random.choice(WEAPON_FLAVOR.get(wid) or FALLBACK_MELEE).format(h=hostile), "combat")
+        else:
+            add(random.choice(FALLBACK_UNARMED).format(h=hostile), "combat")
+
+    if outcome == "PERFECT SUCCESS":
+        add(random.choice([
+            "It goes like clockwork — the crew moves as one.",
+            "Every angle covered. They never see you coming.",
+            "Textbook. In and through before anyone reacts.",
+        ]), "good")
+        if context == "combat":
+            enemies_killed = random.randint(1, 2 + difficulty // 2)
+            for _ in range(enemies_killed): takedown()
+    elif outcome == "SUCCESS":
         enemies_killed = random.randint(1, 3 + difficulty // 2)
-        for _ in range(enemies_killed):
-            add("You shot an enemy.", "combat")
-        if outcome == "SUCCESS" and random.random() < 0.4:
-            add("You were shot.", "bad"); times_shot += 1
+        for _ in range(enemies_killed): takedown()
+        if random.random() < (0.5 if aggro else 0.3):
+            times_shot += 1; add("A round clips you — you keep moving.", "bad")
     elif outcome == "PARTIAL SUCCESS":
         enemies_killed = random.randint(1, 4)
         times_shot = random.randint(1, 2)
-        for _ in range(enemies_killed): add("You shot an enemy.", "combat")
-        for _ in range(times_shot): add("You were shot.", "bad")
-        add("Security alerted.", "warn")
+        add("It gets messy — the score is only half in reach.", "warn")
+        for _ in range(enemies_killed): takedown()
+        for _ in range(times_shot): add("You take a hit and stagger.", "bad")
+        add("Alarms are screaming now.", "warn")
     elif outcome == "FAILED":
         enemies_killed = random.randint(0, 2)
         times_shot = random.randint(2, 4)
-        for _ in range(enemies_killed): add("You shot an enemy.", "combat")
-        for _ in range(times_shot): add("You were shot.", "bad")
+        add("It falls apart fast.", "bad")
+        for _ in range(enemies_killed): takedown()
+        for _ in range(times_shot): add("Rounds tear into you.", "bad")
         add("Crew member down.", "bad")
-        add("Police response incoming.", "bad")
+        add("Sirens closing from every street.", "bad")
     else:  # DISASTER
         times_shot = random.randint(3, 6)
-        for _ in range(times_shot): add("You were shot.", "bad")
+        add("Everything that can go wrong, does.", "bad")
+        for _ in range(times_shot): add("You're hit — badly.", "bad")
         add("Crew member down.", "bad")
         if len(crew_data) >= 2: add("Crew member down.", "bad")
-        add("Escape route compromised.", "bad")
-        add("Police lockdown deployed.", "bad")
+        add("Exits are sealed. Lockdown deployed.", "bad")
 
-    # cash / escape
+    # --- Escape (reacts to driver / vehicle / outcome) ---
     if outcome in ("PERFECT SUCCESS", "SUCCESS", "PARTIAL SUCCESS"):
-        add("Cash secured.", "good")
+        add("Score secured — cash and product in the bags.", "good")
     if outcome in ("PERFECT SUCCESS", "SUCCESS"):
         if "driver" in specs_available:
-            add("Driver found an alternate escape route.", "good")
-        add("Crew reached extraction.", "good")
-        add("Police lost the trail.", "good")
-        add("Escape successful.", "good")
+            add("Driver threads an alternate route through the backstreets.", "good")
+        elif veh_data and veh_data.get("escape", 0) >= 75:
+            add(f"The {veh_data['name']} eats the distance and loses the tail.", "good")
+        add("Police lose the trail in the neon haze.", "good")
+        add("Clean extraction. You're ghosts again.", "good")
     elif outcome == "PARTIAL SUCCESS":
-        add("Vehicle damaged during escape.", "warn")
-        add("Escape successful — barely.", "warn")
+        add(f"The {veh_data['name'] if veh_data else 'getaway car'} takes damage smashing through the cordon.", "warn")
+        add("You break the perimeter — barely. Half the score, but you're breathing.", "warn")
     elif outcome == "FAILED":
-        add("Operation aborted.", "bad")
+        add("You bail with nothing. Operation aborted.", "bad")
     else:
-        add("Player down. Operation catastrophic failure.", "bad")
+        add("Down and surrounded. Catastrophic failure.", "bad")
 
-    # compute rewards & deltas
+    # --- Rewards & deltas ---
     base_cash = random.randint(heist["reward_min"], heist["reward_max"])
-    cash = int(base_cash * mult)
+    cash = int(base_cash * mult * (1 + (reward_bias if mult > 0 else 0)))
     xp = int((heist["reward_min"] / 8) * (mult if mult > 0 else 0.2))
     rep = int(heist["difficulty"] * 3 * rep_mult)
     heat_gain = heist["heat_gain"] if mult >= 0.5 else int(heist["heat_gain"] * 1.5)
     if outcome == "PERFECT SUCCESS": heat_gain = int(heat_gain * 0.5)
+    if aggro: heat_gain = int(heat_gain * 1.2)
 
-    # damage
-    hp_loss = int(100 * hp_loss_pct)
+    hp_loss = int(100 * hp_loss_pct * hp_bias)
     if armor:
         hp_loss = int(hp_loss * (1 - armor["damage_reduction"] / 100))
-    # veh damage — gradual, scales with heist difficulty, less on expensive vehicles
     veh_dmg = vehicle_wear(veh_data, difficulty)
+    if outcome == "PARTIAL SUCCESS": veh_dmg = int(veh_dmg * 1.4)
 
-    # ammo used
-    ammo_used = 0
-    if weapon and weapon["ammo_type"]:
-        ammo_used = enemies_killed * random.randint(2, 6) + times_shot * random.randint(1, 3)
+    ammo_used = ammo_ref[0] if is_firearm else 0
 
     crew_lost = sum(1 for e in events if e["msg"] == "Crew member down.")
 
-    # ---- Drone loss (separate from heist failure) ----
+    # --- Drone loss ---
     drone_loss = False
-    drone_meta = find_item(DRONES, drone_id) if drone_id else None
     if drone_meta:
-        add(f"{drone_meta['name']} deployed for overwatch.", "info")
         loss_base = 0.005 if heist["type"] == "quick" else difficulty * 0.012
         loss_base *= (1 - drone_meta.get("loss_reduce", 0))
         if specs_available & {"infiltrator", "hacker"}:
-            loss_base *= 0.8  # preparation reduces risk
+            loss_base *= 0.8
+        if aggro: loss_base *= 1.3
         if random.random() < loss_base:
             drone_loss = True
-            add("Drone Contact Lost — Something shot down your drone. You couldn't identify the shooter.", "bad")
+            add(f"{drone_meta['name']} contact lost — something shot it down. Destroyed.", "bad")
 
-    # ---- Capture / arrest (a probability inside the random factor; only on failure) ----
+    # --- Capture / arrest ---
     captured = False
     if outcome in ("FAILED", "DISASTER"):
         cap_prob = (0.12 if outcome == "FAILED" else 0.30) + user.get("heat", 0) / 100 * (0.15 if outcome == "FAILED" else 0.22)
+        cap_prob += capture_bias
         if drone_meta and drone_meta.get("capture_reduce"):
             cap_prob -= drone_meta["capture_reduce"]
         if random.random() < max(0, cap_prob):
             captured = True
-            add("You were captured by the police.", "bad")
+            add("They drag you down in cuffs. You're going away.", "bad")
 
     return {
         "events": events,
         "outcome": outcome,
-        "success_chance": round(base, 3),
+        "success_chance": round(base_adj, 3),
         "context": context,
         "drone_loss": drone_loss,
         "captured": captured,
@@ -953,9 +1178,9 @@ async def run_heist(data: HeistIn, request: Request):
     if drone_id:
         if user.get("drones", {}).get(drone_id, 0) < 1:
             raise HTTPException(400, "Drone not owned")
-    # per-heist cooldown (individual, not global)
+    # per-heist cooldown (individual per heist, tuned by farmability)
     cooldown_map = {"quick": 90, "street": 240, "heist": 600, "major": 1200}
-    cd_seconds = cooldown_map.get(heist["type"], 180)
+    cd_seconds = heist.get("cooldown", cooldown_map.get(heist["type"], 180))
     cds = user.get("heist_cooldowns", {})
     last = cds.get(data.heist_id)
     if last:
@@ -969,27 +1194,51 @@ async def run_heist(data: HeistIn, request: Request):
     if weapon and weapon["ammo_type"] and user["ammo"].get(weapon["ammo_type"], 0) < 5:
         raise HTTPException(400, f"Not enough {weapon['ammo_type']} ammo. Buy more.")
 
+    # ===== PHASE 1: briefing + interactive decision (no state change) =====
+    if data.choice is None:
+        return heist_briefing(user, heist, data.crew_ids, data.vehicle_id, drone_id, data.player_ids)
+
+    # ===== PHASE 2: resolve the operation with the chosen decision =====
     # consume stamina exactly once, now that the heist actually starts
     user["stamina"] = max(0, user.get("stamina", 0) - stamina_cost)
 
-    result = simulate_heist(user, heist, data.crew_ids, data.vehicle_id, drone_id, data.player_ids)
+    result = resolve_heist(user, heist, data.crew_ids, data.vehicle_id, drone_id, data.player_ids, data.choice, data.t0)
     rew = result["rewards"]
+
+    # ===== Daily Contract bonus: +30% cash if this heist is today's contract & not yet completed =====
+    dc = get_or_roll_daily(user)
+    daily_bonus = False
+    if dc["heist_id"] == data.heist_id and not dc["completed"] and result["outcome"] in ("PERFECT SUCCESS", "SUCCESS", "PARTIAL SUCCESS"):
+        rew["cash"] = int(rew["cash"] * DAILY_MULT)
+        dc["completed"] = True
+        user["daily_contract"] = dc
+        daily_bonus = True
+    rew["daily_bonus"] = daily_bonus
 
     # split cash evenly among real players (NPCs never count); runner keeps one share
     real_players = []
     if data.player_ids:
-        real_players = await db.users.find({"id": {"$in": data.player_ids}}, {"_id": 0, "id": 1}).to_list(20)
+        real_players = await db.users.find({"id": {"$in": data.player_ids}}, {"_id": 0, "id": 1, "username": 1}).to_list(20)
     shares = 1 + len(real_players)
     pot = rew["cash"]
     my_share = pot // shares if shares > 0 else pot
     rew["pot"] = pot
     rew["your_share"] = my_share
     rew["cash"] = my_share  # what the runner actually receives
+    # shared loot log — real players only; NPCs work for a flat fee and take no cut
+    loot_log = [{"username": user["username"], "share": my_share, "you": True, "role": "Lead"}]
     if real_players and my_share > 0:
         per = my_share
         for rp in real_players:
             await db.users.update_one({"id": rp["id"]}, {"$inc": {"money": per, "stats.total_earnings": per}})
             await notify(rp["id"], "heist_payout", "Heist Payout", f"You received ${per:,} as your share of {heist['name']}.", link="heists")
+            loot_log.append({"username": rp.get("username", "Operator"), "share": per, "you": False, "role": "Crew"})
+    elif real_players:
+        for rp in real_players:
+            loot_log.append({"username": rp.get("username", "Operator"), "share": 0, "you": False, "role": "Crew"})
+    npc_count = len(data.crew_ids)
+    rew["loot_log"] = loot_log
+    rew["npc_count"] = npc_count
 
     # apply deltas (runner gets only their share)
     user["money"] += my_share
@@ -1044,7 +1293,7 @@ async def run_heist(data: HeistIn, request: Request):
         "money": user["money"], "xp": user["xp"], "level": user["level"], "reputation": user["reputation"],
         "heat": user["heat"], "health": user["health"], "stamina": user["stamina"], "vehicles": user["vehicles"],
         "ammo": user["ammo"], "stats": user["stats"], "drones": user.get("drones", {}),
-        "heist_cooldowns": cds, "prison": user.get("prison"),
+        "heist_cooldowns": cds, "prison": user.get("prison"), "daily_contract": user.get("daily_contract"),
     }})
 
     await db.operations.insert_one({
@@ -1056,7 +1305,8 @@ async def run_heist(data: HeistIn, request: Request):
     updated = await db.users.find_one({"id": user["id"]})
     updated.pop("_id", None); updated.pop("password_hash", None)
     ensure_defaults(updated)
-    return {"events": result["events"], "outcome": result["outcome"], "rewards": rew, "user": updated,
+    return {"phase": "result", "events": result["events"], "outcome": result["outcome"], "rewards": rew, "user": updated,
+            "loot_log": rew.get("loot_log", []), "pot": rew.get("pot", 0), "your_share": rew.get("your_share", 0),
             "cooldown_seconds": cd_seconds, "success_chance": result.get("success_chance"),
             "drone_lost": bool(drone_lost), "captured": result.get("captured"), "prison": prison}
 
@@ -1240,24 +1490,157 @@ async def bank_withdraw(data: BankIn, request: Request):
     return {"money": user["money"] + received, "bank": user.get("bank", 0) - data.amount, "fee": fee, "received": received}
 
 # ========== PVP RAID ==========
+class PvpInviteIn(BaseModel):
+    friend_username: str
+    heist_id: str  # here: the raid target username/gang the ally is invited against
+
+class PvpRespondIn(BaseModel):
+    request_id: str
+    accept: bool = True
+
+RAID_TARGET_COOLDOWN = 2 * 3600      # same attacker cannot re-raid same defender for 2h
+RAID_PROTECTION = 30 * 60            # a raided defender is protected for 30 min
+RAID_POWER_MIN = 0.55                # matchmaking band relative to attacker power
+RAID_POWER_MAX = 1.75
+
+async def _last_raid_between(attacker_name, defender_name):
+    return await db.raids.find_one({"attacker": attacker_name, "defender": defender_name}, sort=[("timestamp", -1)])
+
+async def _raids_today(attacker_name, defender_name):
+    since = (datetime.now(timezone.utc) - timedelta(hours=24)).isoformat()
+    return await db.raids.count_documents({"attacker": attacker_name, "defender": defender_name, "timestamp": {"$gte": since}})
+
+def _target_preview(t, attacker_power, is_bot=False):
+    props = t.get("properties", [])
+    meta = None; prop = None
+    for p in props:
+        m = find_item(PROPERTIES, p["id"])
+        if m and (meta is None or m["tier"] > meta["tier"]):
+            meta, prop = m, p
+    if not meta:
+        return None
+    tp = power_score(t)
+    ratio = tp / attacker_power if attacker_power > 0 else 1
+    diff = "EASY" if ratio < 0.8 else ("FAIR" if ratio < 1.2 else "HARD")
+    est = int(prop.get("cash_stash", 0) + meta["tier"] * 600 + min(t.get("money", 0) // 6, meta["tier"] * 1500))
+    return {"username": t["username"], "level": t.get("level", 1), "specialization": t.get("specialization"),
+            "property_id": prop["id"], "property_name": meta["name"], "property_tier": meta["tier"],
+            "security": prop["security"], "power": round(tp), "difficulty": diff, "estimated_loot": est, "is_bot": is_bot}
+
+def _bot_targets(attacker, n):
+    """Synthetic fallback opponents scaled to the attacker — used only when too few real players."""
+    out = []
+    lvl = attacker["level"]
+    for i in range(n):
+        blvl = max(5, lvl + random.randint(-2, 2))
+        tier = min(5, max(1, blvl // 6 + 1))
+        pmeta = [p for p in PROPERTIES if p["tier"] == tier][0]
+        out.append({"username": f"bot_{random.choice(['Raze','Vex','Nyx','Kilo','Zeta','Onyx'])}{random.randint(100,999)}",
+                    "level": blvl, "specialization": random.choice([s["id"] for s in SPECIALIZATIONS]),
+                    "property_id": pmeta["id"], "property_name": pmeta["name"], "property_tier": tier,
+                    "security": pmeta["security"], "power": round(blvl * 8 + 40), "difficulty": "FAIR",
+                    "estimated_loot": int(tier * 700 + blvl * 120), "is_bot": True})
+    return out
+
 @api.get("/pvp/targets")
-async def pvp_targets(request: Request, limit: int = 20):
+async def pvp_targets(request: Request, limit: int = 8):
     user = await get_current_user(request)
-    targets = await db.users.find(
+    ap = power_score(user)
+    now = datetime.now(timezone.utc)
+    cands = await db.users.find(
         {"id": {"$ne": user["id"]}, "specialization": {"$ne": None}, "properties": {"$ne": []}},
         {"_id": 0, "password_hash": 0, "email": 0}
-    ).limit(limit).to_list(limit)
-    result = []
-    for t in targets:
-        for p in t.get("properties", []):
-            meta = find_item(PROPERTIES, p["id"])
-            if not meta: continue
-            result.append({
-                "username": t["username"], "level": t["level"], "specialization": t["specialization"],
-                "property_id": p["id"], "property_name": meta["name"], "property_tier": meta["tier"],
-                "security": p["security"], "estimated_loot": p.get("cash_stash", 0) + meta["tier"] * 500
-            })
-    return result
+    ).limit(200).to_list(200)
+    eligible = []
+    for t in cands:
+        tp = power_score(t)
+        if not (RAID_POWER_MIN * ap <= tp <= RAID_POWER_MAX * ap):
+            continue
+        prot = t.get("raid_protection_until")
+        if prot and datetime.fromisoformat(prot) > now:
+            continue
+        last = await _last_raid_between(user["username"], t["username"])
+        if last and (now - datetime.fromisoformat(last["timestamp"])).total_seconds() < RAID_TARGET_COOLDOWN:
+            continue
+        pv = _target_preview(t, ap)
+        if pv:
+            eligible.append(pv)
+    random.shuffle(eligible)
+    eligible = eligible[:limit]
+    if len(eligible) < 3:
+        eligible += _bot_targets(user, 3 - len(eligible))
+    return eligible
+
+@api.get("/pvp/search")
+async def pvp_search(request: Request, q: str, kind: str = "player"):
+    user = await get_current_user(request)
+    ap = power_score(user)
+    now = datetime.now(timezone.utc)
+    def eligibility(t):
+        tp = power_score(t)
+        if t["id"] == user["id"]:
+            return "You cannot raid yourself."
+        prot = t.get("raid_protection_until")
+        if prot and datetime.fromisoformat(prot) > now:
+            return "Target is under post-raid protection right now."
+        if not (RAID_POWER_MIN * ap <= tp <= RAID_POWER_MAX * ap):
+            return "Target is outside your fair raid range."
+        if not t.get("properties"):
+            return "Target owns no raidable property."
+        return None
+    results = []
+    if kind == "gang":
+        gang = await db.gangs.find_one({"$or": [{"name": {"$regex": f"^{q}$", "$options": "i"}}, {"tag": {"$regex": f"^{q}$", "$options": "i"}}]})
+        if gang:
+            leader = await db.users.find_one({"id": gang["leader_id"]})
+            if leader:
+                pv = _target_preview(leader, ap)
+                if pv:
+                    pv["gang_name"] = gang["name"]; pv["reason"] = eligibility(leader)
+                    results.append(pv)
+    else:
+        cur = await db.users.find({"username": {"$regex": f"^{q}$", "$options": "i"}}, {"_id": 0, "password_hash": 0, "email": 0}).limit(5).to_list(5)
+        for t in cur:
+            pv = _target_preview(t, ap)
+            if pv is None:
+                pv = {"username": t["username"], "level": t.get("level", 1), "property_id": None, "reason": "Target owns no raidable property."}
+            else:
+                pv["reason"] = eligibility(t)
+            results.append(pv)
+    return results
+
+@api.post("/pvp/invite")
+async def pvp_invite(data: PvpInviteIn, request: Request):
+    user = await get_current_user(request)
+    ally = await db.users.find_one({"username": data.friend_username})
+    if not ally or ally["id"] == user["id"]:
+        raise HTTPException(404, "Player not found")
+    inv = {"id": str(uuid.uuid4()), "type": "raid", "from_id": user["id"], "from_username": user["username"], "to_id": ally["id"], "target": data.heist_id, "status": "pending", "created_at": datetime.now(timezone.utc).isoformat()}
+    await db.raid_invites.insert_one(inv)
+    await notify(ally["id"], "raid_invite", "Raid Invite", f"{user['username']} wants you on a raid against {data.heist_id}.", link="pvp", data={"invite_id": inv["id"]})
+    return {"ok": True}
+
+@api.post("/pvp/invite/respond")
+async def pvp_invite_respond(data: PvpRespondIn, request: Request):
+    user = await get_current_user(request)
+    inv = await db.raid_invites.find_one({"id": data.request_id, "to_id": user["id"], "status": "pending"})
+    if not inv:
+        raise HTTPException(404, "Invite not found")
+    await db.raid_invites.update_one({"id": inv["id"]}, {"$set": {"status": "accepted" if data.accept else "declined"}})
+    if data.accept:
+        await notify(inv["from_id"], "raid_accept", "Raid Invite Accepted", f"{user['username']} joined your raid party.", link="pvp")
+    return {"ok": True, "accepted": data.accept}
+
+@api.get("/pvp/accepted-allies/{target}")
+async def pvp_accepted_allies(target: str, request: Request):
+    user = await get_current_user(request)
+    invs = await db.raid_invites.find({"from_id": user["id"], "target": target, "status": "accepted"}, {"_id": 0}).to_list(20)
+    ids = [i["to_id"] for i in invs]
+    players = []
+    if ids:
+        cur = await db.users.find({"id": {"$in": ids}}, {"_id": 0, "id": 1, "username": 1, "level": 1, "specialization": 1}).to_list(20)
+        players = [{"id": u["id"], "username": u["username"], "level": u.get("level", 1), "specialization": u.get("specialization"), "power": round(power_score(u))} for u in cur]
+    return players
 
 @api.post("/pvp/raid")
 async def pvp_raid(data: RaidIn, request: Request):
@@ -1266,15 +1649,10 @@ async def pvp_raid(data: RaidIn, request: Request):
         raise HTTPException(400, "Level 5+ required for PvP raids")
     if attacker["health"] < 40:
         raise HTTPException(400, "Health too low")
-    defender = await db.users.find_one({"username": data.target_username})
-    if not defender or defender["id"] == attacker["id"]:
-        raise HTTPException(404, "Target not found")
-    prop = next((p for p in defender.get("properties", []) if p["id"] == data.property_id), None)
-    if not prop:
-        raise HTTPException(404, "Property not found on target")
-    prop_meta = find_item(PROPERTIES, data.property_id)
+    now = datetime.now(timezone.utc)
+    ap = power_score(attacker)
+    is_bot = data.target_username.startswith("bot_")
 
-    # attack power: attacker level + crew skill + weapon
     weapon_id = attacker["equipped"].get("primary") or attacker["equipped"].get("secondary")
     weapon = find_item(WEAPONS, weapon_id) if weapon_id else None
     attack_power = attacker["level"] * 3 + (weapon["damage"] if weapon else 10)
@@ -1282,66 +1660,291 @@ async def pvp_raid(data: RaidIn, request: Request):
         if cid in attacker["hired_crew"]:
             npc = find_item(NPCS, cid)
             if npc: attack_power += npc["skill"] * 0.6
-    # defense power: security + defender level
-    defense_power = prop["security"] + defender["level"] * 2 + prop_meta["tier"] * 8
+    # real-player allies (from friends/gang, invite-accepted) add power and share loot
+    ally_players = []
+    if data.ally_ids:
+        ally_players = await db.users.find({"id": {"$in": data.ally_ids}}, {"_id": 0, "id": 1, "username": 1, "level": 1}).to_list(10)
+        for a in ally_players:
+            attack_power += a.get("level", 1) * 2 + 12
 
-    # roll
-    total = attack_power + defense_power
-    success_prob = attack_power / total if total > 0 else 0.5
-    # cap to keep it interesting
-    success_prob = max(0.1, min(0.85, success_prob))
-    won = random.random() < success_prob
-
-    events = []
-    if won:
-        # attacker steals cash_stash + a bonus
+    if is_bot:
+        # synthetic opponent — no defender record touched
+        blvl = max(5, attacker["level"] + random.randint(-2, 2))
+        prop_meta = next((p for p in PROPERTIES if p["id"] == data.property_id), PROPERTIES[0])
+        defense_power = prop_meta["security"] + blvl * 2 + prop_meta["tier"] * 8
+        defender = None; prop = None; stash = 0
+    else:
+        defender = await db.users.find_one({"username": data.target_username})
+        if not defender or defender["id"] == attacker["id"]:
+            raise HTTPException(404, "Target not found")
+        # anti-farming: post-raid protection + per-target cooldown
+        prot = defender.get("raid_protection_until")
+        if prot and datetime.fromisoformat(prot) > now:
+            raise HTTPException(400, "Target is under post-raid protection. Try later or pick another target.")
+        last = await _last_raid_between(attacker["username"], defender["username"])
+        if last and (now - datetime.fromisoformat(last["timestamp"])).total_seconds() < RAID_TARGET_COOLDOWN:
+            raise HTTPException(400, "You raided this target too recently. Cooldown active.")
+        tp = power_score(defender)
+        if not (RAID_POWER_MIN * ap <= tp <= RAID_POWER_MAX * ap):
+            raise HTTPException(400, "Target is outside your fair raid range.")
+        prop = next((p for p in defender.get("properties", []) if p["id"] == data.property_id), None)
+        if not prop:
+            raise HTTPException(404, "Property not found on target")
+        prop_meta = find_item(PROPERTIES, data.property_id)
+        defense_power = prop["security"] + defender["level"] * 2 + prop_meta["tier"] * 8
         stash = prop.get("cash_stash", 0)
-        base_loot = int(prop_meta["tier"] * 800 + stash * 0.6)
-        loot = max(400, min(base_loot, defender["money"] // 4 + stash))
-        events.append(f"Breached {prop_meta['name']}. Guards down.")
-        events.append(f"Extracted ${loot} in cash and valuables.")
-        hp_loss = random.randint(10, 25)
-        events.append(f"Took {hp_loss} damage during exchange.")
-        # apply
-        attacker["money"] += loot
+
+    total = attack_power + defense_power
+    success_prob = max(0.1, min(0.85, attack_power / total if total > 0 else 0.5))
+    won = random.random() < success_prob
+    events = []
+    loot_log = []
+    xp_gain = 0
+
+    if won:
+        base_loot = int(prop_meta["tier"] * 700 + stash * 0.6 + ap * 2)
+        if is_bot:
+            loot = max(400, int(prop_meta["tier"] * 650 + attacker["level"] * 110))
+        else:
+            # reward balance: cap to a fraction of defender liquidity; leave the defender a floor
+            cap = defender["money"] // 5 + stash
+            loot = max(300, min(base_loot, cap))
+            # diminishing returns for repeat targets in 24h
+            recent = await _raids_today(attacker["username"], defender["username"])
+            if recent:
+                loot = int(loot * max(0.25, 1 - 0.35 * recent))
+        hp_loss = random.randint(8, 22)
+        events.append(f"Breached {prop_meta['name']}. Defenders down.")
+        events.append(f"Extracted ${loot:,} in cash and valuables.")
+        events.append(f"Took {hp_loss} damage during the exchange.")
+        # split loot with allies
+        shares = 1 + len(ally_players)
+        my_share = loot // shares
+        loot_log.append({"username": attacker["username"], "share": my_share, "you": True})
+        for a in ally_players:
+            await db.users.update_one({"id": a["id"]}, {"$inc": {"money": my_share, "stats.total_earnings": my_share}})
+            await notify(a["id"], "raid_payout", "Raid Payout", f"You received ${my_share:,} from the raid on {data.target_username}.", link="pvp")
+            loot_log.append({"username": a["username"], "share": my_share, "you": False})
+        attacker["money"] += my_share
         attacker["health"] = max(0, attacker["health"] - hp_loss)
         attacker["reputation"] += 8
         attacker["heat"] = min(100, attacker["heat"] + 15)
-        # defender loses cash
-        defender_money_loss = min(loot, defender["money"] + stash)
-        new_def_money = max(0, defender["money"] - (defender_money_loss - stash) if stash < loot else defender["money"])
-        prop["cash_stash"] = max(0, stash - loot)
-        await db.users.update_one({"id": defender["id"]}, {"$set": {"money": new_def_money, "properties": defender["properties"]}})
+        xp_gain = XP_RULES["raid_win"] + (XP_RULES["gang_assist"] if ally_players else 0)
+        if not is_bot:
+            # defender loses only the looted cash (floored), gains protection
+            new_stash = max(0, stash - loot)
+            cash_from_wallet = max(0, loot - stash)
+            new_def_money = max(0, defender["money"] - cash_from_wallet)
+            for p in defender["properties"]:
+                if p["id"] == prop["id"]:
+                    p["cash_stash"] = new_stash
+            await db.users.update_one({"id": defender["id"]}, {"$set": {
+                "money": new_def_money, "properties": defender["properties"],
+                "raid_protection_until": (now + timedelta(seconds=RAID_PROTECTION)).isoformat()}})
+            await notify(defender["id"], "raided", "You Were Raided", f"{attacker['username']} raided your {prop_meta['name']} and took ${loot:,}. You have 30 min protection.", link="pvp")
         result = "RAID SUCCESSFUL"
     else:
-        # attacker loses resources
-        loss = random.randint(500, 2500) + attacker["level"] * 50
-        loss = min(loss, attacker["money"])
-        hp_loss = random.randint(25, 55)
+        loss = min(random.randint(400, 2000) + attacker["level"] * 40, attacker["money"])
+        hp_loss = random.randint(20, 45)
         events.append(f"Security repelled the assault at {prop_meta['name']}.")
-        events.append(f"Lost ${loss} in equipment and bribes.")
+        events.append(f"Lost ${loss:,} in equipment and bribes.")
         events.append(f"Took {hp_loss} damage.")
         attacker["money"] = max(0, attacker["money"] - loss)
         attacker["health"] = max(0, attacker["health"] - hp_loss)
         attacker["reputation"] = max(0, attacker["reputation"] - 3)
         attacker["heat"] = min(100, attacker["heat"] + 25)
-        # defender gets a small bonus for defending
-        await db.users.update_one({"id": defender["id"]}, {"$inc": {"reputation": 4, "stats.raids_survived": 1}})
+        xp_gain = XP_RULES["raid_loss"]
+        if not is_bot:
+            await db.users.update_one({"id": defender["id"]}, {"$inc": {"reputation": 4, "stats.raids_survived": 1}})
         result = "RAID FAILED"
 
-    await db.users.update_one({"id": attacker["id"]}, {"$set": {"money": attacker["money"], "health": attacker["health"], "reputation": attacker["reputation"], "heat": attacker["heat"]}})
+    attacker = grant_xp(attacker, xp_gain)
+    await db.users.update_one({"id": attacker["id"]}, {"$set": {"money": attacker["money"], "health": attacker["health"], "reputation": attacker["reputation"], "heat": attacker["heat"], "xp": attacker["xp"], "level": attacker["level"]}})
     updated = await db.users.find_one({"id": attacker["id"]})
     updated.pop("_id", None); updated.pop("password_hash", None)
-
-    # log
-    await db.raids.insert_one({"id": str(uuid.uuid4()), "attacker": attacker["username"], "defender": defender["username"], "property_id": data.property_id, "result": result, "timestamp": datetime.now(timezone.utc).isoformat()})
-    return {"result": result, "events": events, "success_prob": round(success_prob, 2), "user": updated}
+    ensure_defaults(updated)
+    await db.raids.insert_one({"id": str(uuid.uuid4()), "attacker": attacker["username"], "defender": data.target_username, "property_id": data.property_id, "result": result, "is_bot": is_bot, "timestamp": now.isoformat()})
+    return {"result": result, "events": events, "success_prob": round(success_prob, 2), "xp": xp_gain, "loot_log": loot_log, "user": updated}
 
 @api.get("/pvp/history")
 async def pvp_history(request: Request, limit: int = 20):
     user = await get_current_user(request)
     raids = await db.raids.find({"$or": [{"attacker": user["username"]}, {"defender": user["username"]}]}, {"_id": 0}).sort("timestamp", -1).limit(limit).to_list(limit)
     return raids
+
+# ================= CASINO (in-game currency only) =================
+CASINO = {"fee_pct": 0.15, "min_bet": 100, "max_bet": 100000}  # 15% fee — configurable
+
+def _casino_charge(user, bet):
+    if bet < CASINO["min_bet"] or bet > CASINO["max_bet"]:
+        raise HTTPException(400, f"Bet must be ${CASINO['min_bet']:,}–${CASINO['max_bet']:,}.")
+    fee = int(round(bet * CASINO["fee_pct"]))
+    total = bet + fee
+    if user.get("money", 0) < total:
+        raise HTTPException(400, f"Need ${total:,} (wager ${bet:,} + 15% fee ${fee:,}).")
+    return fee, total
+
+def _casino_xp(bet):
+    return min(XP_RULES["casino_cap"], (bet // 1000) * XP_RULES["casino_per_1k_wager"])
+
+class CasinoPlayIn(BaseModel):
+    game: str
+    bet: int
+    choice: Optional[str] = None
+
+@api.post("/casino/play")
+async def casino_play(data: CasinoPlayIn, request: Request):
+    """NPC casino games. Fee charged when the game starts; wager is at risk. House edge built in."""
+    user = await get_current_user(request)
+    bet = int(data.bet)
+    fee, total = _casino_charge(user, bet)
+    user["money"] -= total
+    game = data.game; payout = 0; win = False; detail = {}
+    if game == "highcard":
+        p = random.randint(2, 14); h = random.randint(2, 14)
+        win = p > h
+        payout = int(bet * 1.9) if win else 0
+        detail = {"player_card": p, "house_card": h}
+    elif game == "slots":
+        reels = [random.choice(["7", "BAR", "CHERRY", "BELL", "STAR"]) for _ in range(3)]
+        if reels[0] == reels[1] == reels[2]:
+            mult = {"7": 15, "BAR": 8, "STAR": 6, "BELL": 5, "CHERRY": 4}[reels[0]]
+            payout = bet * mult; win = True
+        elif reels[0] == reels[1] or reels[1] == reels[2] or reels[0] == reels[2]:
+            payout = int(bet * 1.4); win = True
+        detail = {"reels": reels}
+    elif game == "roulette":
+        n = random.randint(0, 36)
+        color = "green" if n == 0 else ("red" if n % 2 == 1 else "black")
+        c = (data.choice or "red").lower()
+        if c in ("red", "black"):
+            win = (c == color); payout = int(bet * 1.95) if win else 0
+        else:
+            try: pick = int(c)
+            except Exception: pick = -1
+            win = (pick == n); payout = bet * 35 if win else 0
+        detail = {"number": n, "color": color, "pick": data.choice}
+    else:
+        raise HTTPException(400, "Unknown game")
+    user["money"] += payout
+    xp = _casino_xp(bet)
+    user = grant_xp(user, xp)
+    await db.users.update_one({"id": user["id"]}, {"$set": {"money": user["money"], "xp": user["xp"], "level": user["level"]}})
+    updated = await db.users.find_one({"id": user["id"]}); updated.pop("_id", None); updated.pop("password_hash", None); ensure_defaults(updated)
+    return {"win": win, "game": game, "bet": bet, "fee": fee, "payout": payout, "net": payout - total, "detail": detail, "xp": xp, "user": updated}
+
+class CasinoChallengeIn(BaseModel):
+    friend_username: str
+    bet: int
+
+@api.post("/casino/challenge")
+async def casino_challenge(data: CasinoChallengeIn, request: Request):
+    """Friend High-Card duel — challenger's funds escrowed now; opponent pays on accept."""
+    user = await get_current_user(request)
+    opp = await db.users.find_one({"username": data.friend_username})
+    if not opp or opp["id"] == user["id"]:
+        raise HTTPException(404, "Player not found")
+    bet = int(data.bet)
+    fee, total = _casino_charge(user, bet)
+    user["money"] -= total
+    await db.users.update_one({"id": user["id"]}, {"$set": {"money": user["money"]}})
+    ch = {"id": str(uuid.uuid4()), "from_id": user["id"], "from_username": user["username"], "to_id": opp["id"],
+          "to_username": opp["username"], "bet": bet, "fee": fee, "status": "pending", "created_at": datetime.now(timezone.utc).isoformat()}
+    await db.casino_challenges.insert_one(ch)
+    await notify(opp["id"], "casino_challenge", "Casino Duel", f"{user['username']} challenges you to High-Card for ${bet:,} (+15% fee).", link="casino", data={"challenge_id": ch["id"]})
+    updated = await db.users.find_one({"id": user["id"]}); updated.pop("_id", None); updated.pop("password_hash", None); ensure_defaults(updated)
+    return {"ok": True, "challenge_id": ch["id"], "user": updated}
+
+@api.get("/casino/challenges")
+async def casino_challenges(request: Request):
+    user = await get_current_user(request)
+    incoming = await db.casino_challenges.find({"to_id": user["id"], "status": "pending"}, {"_id": 0}).to_list(20)
+    return {"incoming": incoming}
+
+@api.post("/casino/challenge/respond")
+async def casino_challenge_respond(data: PvpRespondIn, request: Request):
+    user = await get_current_user(request)
+    ch = await db.casino_challenges.find_one({"id": data.request_id, "to_id": user["id"], "status": "pending"})
+    if not ch:
+        raise HTTPException(404, "Challenge not found")
+    if not data.accept:
+        # refund challenger
+        await db.users.update_one({"id": ch["from_id"]}, {"$inc": {"money": ch["bet"] + ch["fee"]}})
+        await db.casino_challenges.update_one({"id": ch["id"]}, {"$set": {"status": "declined"}})
+        return {"ok": True, "accepted": False}
+    total = ch["bet"] + ch["fee"]
+    if user.get("money", 0) < total:
+        # cannot cover — refund challenger, cancel
+        await db.users.update_one({"id": ch["from_id"]}, {"$inc": {"money": ch["bet"] + ch["fee"]}})
+        await db.casino_challenges.update_one({"id": ch["id"]}, {"$set": {"status": "cancelled"}})
+        raise HTTPException(400, f"You need ${total:,} to accept (wager + 15% fee).")
+    # escrow opponent
+    await db.users.update_one({"id": user["id"]}, {"$inc": {"money": -total}})
+    # resolve high-card; tie re-rolls in challenger's favor rarely — decide winner
+    fc, tc = random.randint(2, 14), random.randint(2, 14)
+    while fc == tc:
+        fc, tc = random.randint(2, 14), random.randint(2, 14)
+    challenger_wins = fc > tc
+    pot = ch["bet"] * 2  # both wagers; fees are the house sink
+    winner_id = ch["from_id"] if challenger_wins else user["id"]
+    await db.users.update_one({"id": winner_id}, {"$inc": {"money": pot}})
+    # small XP for both
+    for uid in (ch["from_id"], user["id"]):
+        u = await db.users.find_one({"id": uid})
+        if u:
+            u = grant_xp(u, _casino_xp(ch["bet"]))
+            await db.users.update_one({"id": uid}, {"$set": {"xp": u["xp"], "level": u["level"]}})
+    await db.casino_challenges.update_one({"id": ch["id"]}, {"$set": {"status": "resolved", "winner_id": winner_id, "from_card": fc, "to_card": tc}})
+    await notify(ch["from_id"], "casino_result", "Casino Duel Result", f"High-Card vs {user['username']}: you {'WON' if challenger_wins else 'LOST'} ${ch['bet']:,}.", link="casino")
+    updated = await db.users.find_one({"id": user["id"]}); updated.pop("_id", None); updated.pop("password_hash", None); ensure_defaults(updated)
+    return {"ok": True, "accepted": True, "you_won": not challenger_wins, "from_card": fc, "to_card": tc, "pot": pot, "user": updated}
+
+# ================= DAILY CONTRACT (reuses existing Heist system) =================
+DAILY_MULT = 1.30  # +30% cash bonus, configurable
+
+def _daily_day_index():
+    return int(datetime.now(timezone.utc).timestamp() // 86400)
+
+def _roll_daily_for(user):
+    di = _daily_day_index()
+    eligible = [h for h in HEISTS if h["min_level"] <= user.get("level", 1)] or [HEISTS[0]]
+    rng = random.Random(di * 1009 + (hash(user["id"]) % 100000))
+    h = rng.choice(eligible)
+    return {"day_index": di, "heist_id": h["id"], "completed": False}
+
+def get_or_roll_daily(user):
+    dc = user.get("daily_contract")
+    di = _daily_day_index()
+    if not dc or dc.get("day_index") != di or not find_item(HEISTS, dc.get("heist_id")):
+        dc = _roll_daily_for(user)
+        user["daily_contract"] = dc
+    return dc
+
+@api.get("/daily-contract")
+async def daily_contract(request: Request):
+    user = await get_current_user(request)
+    before = user.get("daily_contract")
+    dc = get_or_roll_daily(user)
+    if before != dc:
+        await db.users.update_one({"id": user["id"]}, {"$set": {"daily_contract": dc}})
+    h = find_item(HEISTS, dc["heist_id"])
+    now = datetime.now(timezone.utc)
+    seconds_to_rotation = 86400 - int(now.timestamp()) % 86400
+    # normal cooldown state for this underlying heist
+    cds = user.get("heist_cooldowns", {})
+    cd_remaining = 0
+    last = cds.get(dc["heist_id"])
+    if last:
+        cd_remaining = max(0, int(h.get("cooldown", 180) - (now - datetime.fromisoformat(last)).total_seconds()))
+    heist_full = {**h, "stamina_cost": CONFIG["heist_stamina_cost"].get(h["type"], 20), "crew_max": CONFIG["heist_crew_max"].get(h["type"], 4), "cooldown": h.get("cooldown", 180)}
+    return {
+        "heist": heist_full, "completed": dc["completed"], "reward_multiplier": DAILY_MULT,
+        "seconds_to_rotation": seconds_to_rotation, "cooldown_remaining": cd_remaining,
+        "normal_reward_min": h["reward_min"], "normal_reward_max": h["reward_max"],
+        "daily_reward_min": int(h["reward_min"] * DAILY_MULT), "daily_reward_max": int(h["reward_max"] * DAILY_MULT),
+        "status": "COMPLETED" if dc["completed"] else ("COOLDOWN" if cd_remaining > 0 else "AVAILABLE"),
+    }
+
 
 # ========== AUTO / OFFLINE RAIDS ==========
 @api.post("/tick/offline-raids")
@@ -1544,8 +2147,9 @@ async def buy_item(data: BuyItemIn, request: Request):
         inv[item["id"]] = inv.get(item["id"], 0) + qty
         user["inventory"] = inv
         field = {"inventory": inv}
-    await db.users.update_one({"id": user["id"]}, {"$set": {"money": user["money"], "bank": user.get("bank", 0), "stats": user["stats"], **field}})
-    return {"ok": True, "money": user["money"], "bank": user.get("bank", 0), "inventory": user.get("inventory", {}), "drones": user.get("drones", {})}
+    xp = purchase_xp(total); user = grant_xp(user, xp)
+    await db.users.update_one({"id": user["id"]}, {"$set": {"money": user["money"], "bank": user.get("bank", 0), "stats": user["stats"], "xp": user["xp"], "level": user["level"], **field}})
+    return {"ok": True, "money": user["money"], "bank": user.get("bank", 0), "inventory": user.get("inventory", {}), "drones": user.get("drones", {}), "xp": xp}
 
 @api.post("/inventory/consume")
 async def consume_item(data: ConsumeIn, request: Request):
@@ -1591,13 +2195,12 @@ async def open_crate(data: ConsumeIn, request: Request):
     inv = user.get("inventory", {})
     if inv.get(item["id"], 0) < 1:
         raise HTTPException(400, "You don't have this crate")
-    good = find_item(CONTRABAND, item.get("good"))
-    if not good:
-        raise HTTPException(400, "Crate has no product")
+    # Mystery gamble: random good + random total value that can fall well below the
+    # crate's price (a loss) or land far above it (a jackpot).
+    good = random.choice(CONTRABAND)
     price = _contraband_prices()[good["id"]]
-    base_units = item.get("units", 10)
-    # balanced: yielded units vary so total value can be a bit under or over the crate price
-    units = max(1, int(round(base_units * random.uniform(0.6, 1.5))))
+    target_value = int(item["price"] * random.uniform(0.3, 1.9))
+    units = max(1, int(round(target_value / max(1, price))))
     value = price * units
     holdings = user.get("contraband", {})
     holdings[good["id"]] = holdings.get(good["id"], 0) + units
@@ -1606,9 +2209,10 @@ async def open_crate(data: ConsumeIn, request: Request):
         inv.pop(item["id"], None)
     await db.users.update_one({"id": user["id"]}, {"$set": {"inventory": inv, "contraband": holdings}})
     profit = value - item["price"]
+    verdict = "JACKPOT" if profit >= item["price"] else ("PROFIT" if profit > 0 else "LOSS")
     return {"ok": True, "good_id": good["id"], "good_name": good["name"], "units": units, "unit": good["unit"],
-            "value": value, "paid": item["price"], "profit": profit, "contraband": holdings, "inventory": inv,
-            "message": f"Opened {item['name']}: {units} {good['unit']}(s) of {good['name']} worth ~${value:,} (paid ${item['price']:,})."}
+            "value": value, "paid": item["price"], "profit": profit, "verdict": verdict, "contraband": holdings, "inventory": inv,
+            "message": f"{verdict}! Opened crate: {units} {good['unit']}(s) of {good['name']} worth ~${value:,} (paid ${item['price']:,})."}
 
 
 # ---------- DRONES ----------
